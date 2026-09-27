@@ -1,0 +1,34 @@
+---
+import { pad, formatDate, type Episode } from '../lib/episodes';
+interface Props { episode: Episode }
+const { episode } = Astro.props;
+const { number, title, date, duration, guest } = episode.data;
+---
+
+<a class="ep-row" href={`/episodes/${episode.id}/`}>
+  <span class="n" aria-hidden="true">{pad(number)}</span>
+  <div>
+    <h3>{title}</h3>
+    <p class="meta">{guest.name} · {guest.role}, {guest.company}</p>
+  </div>
+  <span class="when">{formatDate(date)} · {duration}</span>
+  <span class="play" aria-hidden="true"></span>
+</a>
+
+<style>
+  .ep-row {
+    display: grid; grid-template-columns: 110px 1fr 180px 48px; gap: 32px; align-items: center;
+    padding: 28px 0; border-top: 1px solid var(--navy-15); text-decoration: none;
+  }
+  .ep-row:hover h3 { text-decoration: underline; text-decoration-color: var(--orange); text-underline-offset: 6px; }
+  .n { font: 700 clamp(36px, 3.4vw, 48px)/1 var(--font-display); color: var(--sage); }
+  h3 { font-size: clamp(22px, 2.2vw, 28px); line-height: 1.15; margin-bottom: 6px; }
+  .when { font: 500 14px var(--font-sans); color: var(--coastal); }
+  .play { width: 48px; height: 48px; border-radius: 50%; border: 1.5px solid currentColor; display: grid; place-items: center; }
+  .play::before { content: ''; margin-left: 4px; border-left: 12px solid currentColor; border-top: 8px solid transparent; border-bottom: 8px solid transparent; }
+  @media (max-width: 959px) {
+    .ep-row { grid-template-columns: 56px 1fr 40px; gap: 16px; }
+    .when { display: none; }
+    .play { width: 40px; height: 40px; }
+  }
+</style>

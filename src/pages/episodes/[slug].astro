@@ -1,0 +1,222 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Portrait from '../../components/Portrait.astro';
+import EpisodeCard from '../../components/EpisodeCard.astro';
+import SignupForm from '../../components/SignupForm.astro';
+import { getEpisodes, pad, formatDate, type Episode } from '../../lib/episodes';
+import { SITE } from '../../site';
+
+export async function getStaticPaths() {
+  const episodes = await getEpisodes();
+  return episodes.map((episode, i) => ({
+    params: { slug: episode.id },
+    props: {
+      episode,
+      newer: episodes[i - 1],
+      older: episodes[i + 1],
+      more: episodes.filter((e) => e.id !== episode.id).slice(0, 3),
+    },
+  }));
+}
+
+interface Props { episode: Episode; newer?: Episode; older?: Episode; more: Episode[] }
+const { episode, newer, older, more } = Astro.props;
+const { number, title, date, duration, summary, guest, riversideEmbed, listen, chapters, quote, mentioned } = episode.data;
+const { Content } = await render(episode);
+const hasTranscript = Boolean(episode.body?.trim());
+
+const listenLinks = [
+  { label: 'Apple Podcasts', href: listen.apple },
+  { label: 'Spotify', href: listen.spotify },
+  { label: 'YouTube', href: listen.youtube },
+].filter((l) => l.href);
+
+const pageUrl = new URL(Astro.url.pathname, Astro.site).toString();
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'PodcastEpisode',
+  url: pageUrl,
+  name: title,
+  episodeNumber: number,
+  datePublished: date.toISOString().slice(0, 10),
+  description: summary,
+  partOfSeries: { '@type': 'PodcastSeries', name: SITE.name, url: SITE.url },
+};
+---
+
+<Base title={`${title} — ${guest.name}`} description={summary}>
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+  <section class="ep-hero navy tex">
+    <div class="wrap grid">
+      <div>
+        <p class="eyebrow">Episode {pad(number)} · {formatDate(date)} · {duration}</p>
+        <h1>{title}</h1>
+        <hr class="rule" />
+        <p class="guest">{guest.name}</p>
+        <p class="role">{guest.role}, {guest.company}</p>
+        <a class="btn btn--inv" href="#listen">Play episode <span class="arrow" aria-hidden="true"></span></a>
+      </div>
+      <Portrait src={guest.photo} alt={guest.name} eager />
+    </div>
+  </section>
+
+  <section id="listen" class="listen">
+    <div class="wrap">
+      <div class="player navy">
+        {riversideEmbed ? (
+          <iframe src={riversideEmbed} title={`Listen: ${title}`} loading="lazy" allow="autoplay; encrypted-media; fullscreen"></iframe>
+        ) : (
+          <p class="player-empty">Player coming soon.</p>
+        )}
+      </div>
+      {listenLinks.length > 0 && (
+        <div class="listen-on">
+          <span class="eyebrow eyebrow--muted">Listen on</span>
+          <div class="pills">{listenLinks.map((l) => <a class="pill" href={l.href}>{l.label}</a>)}</div>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <section class="section body">
+    <div class="wrap grid">
+      <article class="prose">
+        <p class="lede">{summary}</p>
+
+        {chapters.length > 0 && (
+          <>
+            <h2 class="sub">In this episode</h2>
+            <ol class="chapters">
+              {chapters.map((c) => <li><b>{c.time}</b><span>{c.title}</span></li>)}
+            </ol>
+          </>
+        )}
+
+        {quote && <blockquote class="pull">{quote}</blockquote>}
+
+        {mentioned.length > 0 && (
+          <>
+            <h2 class="sub">Mentioned</h2>
+            <ul class="mentioned">
+              {mentioned.map((m) => <li>{m.url ? <a href={m.url}>{m.label}</a> : m.label}</li>)}
+            </ul>
+          </>
+        )}
+
+        {hasTranscript && (
+          <details class="transcript">
+            <summary>Full transcript</summary>
+            <div class="transcript-body"><Content /></div>
+          </details>
+        )}
+      </article>
+
+      <aside>
+        <div class="card">
+          <p class="eyebrow eyebrow--muted">About the guest</p>
+          <h2 class="guest-name">{guest.name}</h2>
+          {guest.bio && <p class="small">{guest.bio}</p>}
+          {guest.links.length > 0 && (
+            <div class="pills">{guest.links.map((l) => <a class="pill" href={l.url}>{l.label}</a>)}</div>
+          )}
+        </div>
+        <div class="card">
+          <p class="eyebrow eyebrow--muted">Share</p>
+          <div class="pills">
+            <button class="pill copy" type="button" data-url={pageUrl}>Copy link</button>
+            <a class="pill" href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(pageUrl)}`}>LinkedIn</a>
+            <a class="pill" href={`https://x.com/intent/post?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(title)}`}>X</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  {(newer || older || more.length > 0) && (
+    <section class="section section--flush-top">
+      <div class="wrap">
+        <nav class="prevnext" aria-label="More episodes">
+          {older ? <a href={`/episodes/${older.id}/`}><span class="eyebrow eyebrow--muted">← Previous · Episode {pad(older.data.number)}</span><span class="pn-title">{older.data.title}</span></a> : <span />}
+          {newer && <a class="next" href={`/episodes/${newer.id}/`}><span class="eyebrow eyebrow--muted">Next · Episode {pad(newer.data.number)} →</span><span class="pn-title">{newer.data.title}</span></a>}
+        </nav>
+        {more.length > 0 && (
+          <>
+            <h2 class="eyebrow divider-label more-title">More episodes</h2>
+            <div class="cards">{more.map((ep) => <EpisodeCard episode={ep} />)}</div>
+          </>
+        )}
+      </div>
+    </section>
+  )}
+
+  <section class="navy tex section">
+    <div class="wrap">
+      <p class="eyebrow">Never miss one</p>
+      <p class="serif statement signup-title">New conversations, straight to your inbox.</p>
+      <SignupForm id="signup-episode" dark note={false} />
+    </div>
+  </section>
+</Base>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('.copy').forEach((b) =>
+    b.addEventListener('click', async () => {
+      await navigator.clipboard.writeText(b.dataset.url ?? location.href);
+      b.textContent = 'Copied';
+      setTimeout(() => (b.textContent = 'Copy link'), 2000);
+    }),
+  );
+</script>
+
+<style>
+  .ep-hero { padding: clamp(56px, 8vw, 112px) 0; }
+  .ep-hero .grid { display: grid; grid-template-columns: 7fr 4fr; gap: 72px; align-items: center; }
+  .ep-hero h1 { font-size: clamp(38px, 5vw, 72px); line-height: 1.04; letter-spacing: -0.015em; margin: 20px 0 24px; }
+  .ep-hero .rule { margin-bottom: 20px; }
+  .guest { font: 600 18px var(--font-sans); }
+  .role { color: var(--white-70); margin-bottom: 28px; }
+
+  .listen { padding-top: 48px; }
+  .player { border-radius: 4px; padding: 20px; min-height: 96px; display: flex; align-items: center; }
+  .player iframe { width: 100%; height: 180px; border: 0; }
+  .player-empty { color: var(--white-70); font-size: 15px; padding: 0 8px; }
+  .listen-on { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-top: 20px; }
+
+  .body { padding-top: 64px; }
+  .body .grid { display: grid; grid-template-columns: 8fr 4fr; gap: 72px; }
+  .body .lede { max-width: none; }
+  aside { position: sticky; top: 96px; align-self: start; }
+  .card + .card { margin-top: 20px; }
+  .card .pills { margin-top: 16px; }
+  .guest-name { font-size: 26px; margin: 14px 0 10px; }
+  .small { font-size: 15px; }
+  button.pill { background: none; cursor: pointer; }
+
+  .sub { font: 600 13px var(--font-sans); letter-spacing: 0.2em; text-transform: uppercase; margin: 56px 0 20px; }
+  .chapters { list-style: none; padding: 0; }
+  .chapters li { display: grid; grid-template-columns: 72px 1fr; padding: 12px 0; border-top: 1px solid rgba(11, 31, 45, 0.1); }
+  .chapters b { font: 600 14px var(--font-sans); color: var(--coastal); }
+  .pull { border-left: 3px solid var(--orange); padding: 4px 0 4px 28px; margin: 48px 0; font: italic 600 clamp(24px, 2.6vw, 34px)/1.25 var(--font-display); }
+  .mentioned { padding-left: 1.2em; }
+  .transcript { border-top: 1px solid var(--navy-15); border-bottom: 1px solid var(--navy-15); padding: 20px 0; margin-top: 56px; }
+  .transcript summary { font: 600 13px var(--font-sans); letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; }
+  .transcript-body { padding-top: 20px; }
+
+  .prevnext { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; border-top: 1px solid var(--navy-15); padding-top: 32px; }
+  .prevnext a { text-decoration: none; display: grid; gap: 10px; }
+  .prevnext .next { text-align: right; }
+  .pn-title { font: 700 22px/1.2 var(--font-display); }
+  .more-title { margin: 96px 0 32px; }
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+
+  .signup-title { font-size: clamp(30px, 4vw, 56px); margin: 24px 0 32px; }
+
+  @media (max-width: 959px) {
+    .ep-hero .grid, .body .grid, .cards, .prevnext { grid-template-columns: 1fr; }
+    .ep-hero :global(.portrait) { order: -1; max-width: 260px; }
+    aside { position: static; }
+    .prevnext .next { text-align: left; }
+  }
+</style>

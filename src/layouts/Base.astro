@@ -1,0 +1,90 @@
+---
+import '@fontsource/montserrat/400.css';
+import '@fontsource/montserrat/500.css';
+import '@fontsource/montserrat/600.css';
+import '@fontsource/montserrat/700.css';
+import '@fontsource-variable/source-serif-4/opsz.css';
+import '@fontsource-variable/source-serif-4/opsz-italic.css';
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE } from '../site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  noindex?: boolean;
+}
+
+const { title, description = SITE.description, image = '/og-default.jpg', noindex = false } = Astro.props;
+const fullTitle = title ? `${title} · ${SITE.name}` : `${SITE.name} — ${SITE.tagline}`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL(image, Astro.site);
+---
+
+<!doctype html>
+<html lang="en-CA">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#0B1F2D" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content="en_CA" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+
+    <script>
+      // Netlify Forms, submitted in place. Without JS the form posts normally and lands on /thanks/.
+      document.querySelectorAll<HTMLFormElement>('form[data-ajax]').forEach((form) => {
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const button = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+          const error = form.querySelector<HTMLElement>('.form-error');
+          const label = button?.innerHTML ?? '';
+          if (error) error.hidden = true;
+          if (button) { button.disabled = true; button.textContent = 'Sending…'; }
+          try {
+            const body = new URLSearchParams(new FormData(form) as unknown as Record<string, string>);
+            const res = await fetch('/', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              body: body.toString(),
+            });
+            if (!res.ok) throw new Error(String(res.status));
+            const done = document.createElement('p');
+            done.className = 'lede form-success';
+            done.setAttribute('role', 'status');
+            done.innerHTML = form.dataset.success ?? 'Thanks.';
+            form.replaceWith(done);
+          } catch {
+            if (button) { button.disabled = false; button.innerHTML = label; }
+            if (error) error.hidden = false;
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

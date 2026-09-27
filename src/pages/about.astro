@@ -1,0 +1,109 @@
+---
+import Base from '../layouts/Base.astro';
+import PitchBand from '../components/PitchBand.astro';
+import Portrait from '../components/Portrait.astro';
+import { SITE } from '../site';
+import hostPhoto from '../assets/host.webp';
+
+const steps = [
+  { title: 'One guest', body: 'No co-hosts talking over each other. The whole hour belongs to the guest.' },
+  { title: 'On video, anywhere in BC', body: 'In person when we can, remote when we can’t. The conversation matters more than the room.' },
+  { title: 'Long form', body: 'About an hour. Long enough to move past the talking points.' },
+  { title: 'Listen everywhere', body: 'Audio on Apple Podcasts and Spotify, transcripts here.' },
+];
+---
+
+<Base title="About" description="Built West is a long-form interview podcast about the people building BC tech.">
+  <section class="page-hero">
+    <div class="wrap">
+      <p class="eyebrow">About the show</p>
+      <h1 class="h1">The story of BC tech, told by the people building it.</h1>
+      <p class="lede">Built West is a long-form interview podcast. One guest, one unhurried conversation, on video from wherever they are in BC.</p>
+    </div>
+  </section>
+
+  <section class="section section--flush-top">
+    <div class="wrap">
+      <h2 class="h2 why">Why Built West</h2>
+      <div class="prose prose--wide">
+        <p>British Columbia has been quietly building serious technology companies for decades. Most of those stories never get told, or get squeezed into a press release.</p>
+        <p>Built West is the long version. We sit down with founders, operators and investors and talk about how things actually got built: the early days, the misses, the decisions that only looked obvious afterwards. And we get into the person making them, because the business is never the whole story.</p>
+        <p>The goal is simple. Make BC tech easier to see, so more talent, founders and companies build here and stay.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="navy tex section">
+    <figure class="wrap">
+      <p class="eyebrow">The idea</p>
+      <blockquote class="serif quote">We have many of the makings of a great tech hub. We’ve never quite lived up to our potential.</blockquote>
+      <figcaption class="eyebrow">— {SITE.host.name}, {SITE.host.role}</figcaption>
+    </figure>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <h2 class="eyebrow steps-title">How it works</h2>
+      <ol class="steps">
+        {steps.map((s, i) => (
+          <li>
+            <span class="num">{String(i + 1).padStart(2, '0')}</span>
+            <h3>{s.title}</h3>
+            <p>{s.body}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section section--flush-top">
+    <div class="wrap host">
+      <Portrait src={hostPhoto} alt={`${SITE.host.name}, host of Built West`} />
+      <div>
+        <p class="eyebrow eyebrow--muted">Your host</p>
+        <h2 class="host-name">{SITE.host.name}</h2>
+        <hr class="rule" />
+        <div class="prose">
+          <p class="lede">Hey, I’m Matt: dad, Victoria local, and endlessly curious about the people behind the companies.</p>
+          <p>I’ve had a blast building my career over the past 15 years across marketing, sales and operations, in organizations of all sizes and stages. From marketing specialist to quota-carrying rep to VP to COO, I’ve been lucky to have some incredible experiences and work with a lot of amazing people who are still friends today.</p>
+          <p>I had the idea for Built West a few years ago, and no matter where my life or career took me, I kept coming back to it. I consume podcasts at an alarming rate, and always thought we needed a place to tell the stories of the people behind BC tech. We have many of the makings of a great tech hub (education, lifestyle, talent), but we’ve never quite lived up to our potential.</p>
+          <p>I want to be a small part of helping grow this ecosystem and keeping talent, founders and companies in BC. Built West brings you unfiltered conversations with the people building technology here: how they build, and how they manage the rest of life along the way.</p>
+        </div>
+        <div class="pills">
+          <a class="pill" href={`mailto:${SITE.email}`}>Email</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <PitchBand />
+</Base>
+
+<style>
+  .page-hero { padding: clamp(64px, 9vw, 120px) 0 clamp(40px, 5vw, 72px); }
+  .page-hero h1 { max-width: 22ch; margin: 20px 0 24px; }
+  .page-hero .lede { max-width: 60ch; }
+  .why { margin-bottom: 28px; }
+
+  .quote { font-size: clamp(30px, 4.4vw, 60px); line-height: 1.1; font-style: italic; font-weight: 600; margin: 28px 0; }
+  .quote::before { content: '\201C'; color: var(--orange); margin-right: 0.05em; }
+
+  .steps-title { margin-bottom: 24px; }
+  .steps { list-style: none; padding: 0; border-bottom: 1px solid var(--navy-15); }
+  .steps li { display: grid; grid-template-columns: 90px 1fr 1.4fr; gap: 32px; padding: 30px 0; border-top: 1px solid var(--navy-15); align-items: baseline; }
+  .num { font: 700 13px var(--font-sans); letter-spacing: 0.2em; color: var(--coastal); }
+  .steps h3 { font-size: clamp(22px, 2.2vw, 30px); line-height: 1.15; }
+
+  .host { display: grid; grid-template-columns: 5fr 7fr; gap: 72px; align-items: start; }
+  .host :global(.portrait) { position: sticky; top: 96px; }
+  .host .lede { font-size: clamp(20px, 1.8vw, 24px); }
+  .host-name { font-size: clamp(34px, 4vw, 56px); line-height: 1.05; margin: 16px 0 24px; }
+  .host .rule { margin-bottom: 24px; }
+  .host .pills { margin-top: 20px; }
+
+  @media (max-width: 959px) {
+    .steps li { grid-template-columns: 1fr; gap: 8px; }
+    .host { grid-template-columns: 1fr; gap: 40px; }
+    .host :global(.portrait) { max-width: 360px; position: static; }
+  }
+</style>

@@ -1,0 +1,53 @@
+---
+// Email signup, handled by Netlify Forms ("notify"). Place inside a .navy/.forest section for the dark variant.
+interface Props {
+  id: string;
+  button?: string;
+  dark?: boolean;
+  note?: boolean;
+}
+const { id, button = 'Get notified', dark = false, note = true } = Astro.props;
+---
+
+<div class:list={['signup', { dark }]}>
+  <form
+    id={id}
+    name="notify"
+    method="POST"
+    action="/thanks/"
+    data-netlify="true"
+    netlify-honeypot="bot-field"
+    data-ajax
+    data-success="<strong>You’re on the list.</strong> We’ll keep you posted."
+  >
+    <input type="hidden" name="form-name" value="notify" />
+    <p class="hp" aria-hidden="true"><label>Leave this empty <input name="bot-field" tabindex="-1" autocomplete="off" /></label></p>
+    <div class="row">
+      <label class="sr-only" for={`${id}-email`}>Email address</label>
+      <input id={`${id}-email`} type="email" name="email" required autocomplete="email" placeholder="you@company.com" />
+      <button class:list={['btn', { 'btn--inv': dark }]} type="submit">
+        {button} <span class="arrow" aria-hidden="true"></span>
+      </button>
+    </div>
+    <p class="form-error" role="alert" hidden>That didn’t go through. Check your email address and try again.</p>
+  </form>
+  {note && <p class="micro">Sign up for updates.</p>}
+</div>
+
+<style>
+  .signup { max-width: 540px; }
+  .row { display: flex; gap: 12px; }
+  input[type='email'] {
+    flex: 1; min-width: 0; height: 48px; padding: 0 2px;
+    background: transparent; border: 0; border-bottom: 1.5px solid var(--navy); border-radius: 0;
+    font-size: 16px;
+  }
+  input[type='email']::placeholder { color: var(--coastal); }
+  .dark input[type='email'] { border-bottom-color: var(--white); }
+  .dark input[type='email']::placeholder { color: rgba(255, 255, 255, 0.55); }
+  .signup :global(.form-success) { margin-top: 8px; }
+  @media (max-width: 639px) {
+    .row { flex-direction: column; }
+    .row .btn { width: 100%; }
+  }
+</style>

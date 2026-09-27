@@ -1,0 +1,138 @@
+---
+import { Picture } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import SignupForm from '../components/SignupForm.astro';
+import PitchBand from '../components/PitchBand.astro';
+import Portrait from '../components/Portrait.astro';
+import hero from '../assets/hero-coast.jpg';
+import hostPhoto from '../assets/host.webp';
+import { SITE } from '../site';
+import { getEpisodes, pad } from '../lib/episodes';
+
+const [latest] = await getEpisodes();
+const live = SITE.launched && latest;
+
+const intro = [
+  { title: 'What it is', body: 'Built West is an exploration of the people building technology in BC: the founders, operators and investors doing the work. We have unfiltered conversations with the people in the trenches.' },
+  { title: 'Who it’s for', body: 'Founders and executives who want the person behind the title. Investors who want to hear from operators. First-time founders who want to be in the room with both.' },
+  { title: 'What to expect', body: 'The work and the person doing it. How something got built, what it cost, and how they handle the rest of life along the way.' },
+];
+---
+
+<Base>
+  <section class="hero navy">
+    <Picture
+      class="hero-img"
+      src={hero}
+      alt=""
+      formats={['avif', 'webp']}
+      widths={[640, 960, 1235]}
+      sizes="100vw"
+      quality={82}
+      loading="eager"
+      fetchpriority="high"
+    />
+    <div class="wrap hero-copy">
+      <p class="eyebrow">{live ? 'New episode out now' : 'Coming soon'} · A BC tech podcast</p>
+      <h1 class="display">Long-form conversations with the people building BC tech.</h1>
+      <p class="lede">One guest. One unhurried conversation about the work, and the life around it.</p>
+      {live ? (
+        <a class="btn btn--inv" href={`/episodes/${latest.id}/`}>Listen to episode {pad(latest.data.number)} <span class="arrow" aria-hidden="true"></span></a>
+      ) : (
+        <div id="signup"><SignupForm id="signup-hero" dark /></div>
+      )}
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap intro">
+      {intro.map((c) => (
+        <div>
+          <h2 class="eyebrow">{c.title}</h2>
+          <p>{c.body}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="section section--flush-top">
+    <div class="wrap">
+      <div class="host">
+        <Portrait src={hostPhoto} alt={`${SITE.host.name}, host of Built West`} />
+        <div>
+          <p class="eyebrow eyebrow--muted">Your host</p>
+          <h2 class="h2">{SITE.host.name}</h2>
+          <p class="host-bio">Operator, dad, Victoria local. Fifteen years building companies across sales, marketing and operations. Built West is the show he kept wishing existed.</p>
+          <a class="link" href="/about/">More about the show →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--flush-top">
+    <div class="wrap">
+      {live ? (
+        <a class="teaser card" href={`/episodes/${latest.id}/`}>
+          <Portrait src={latest.data.guest.photo} alt={latest.data.guest.name} />
+          <div>
+            <p class="eyebrow eyebrow--muted">Latest · Episode {pad(latest.data.number)} · {latest.data.duration}</p>
+            <h2 class="h2">{latest.data.title}</h2>
+            <hr class="rule" />
+            <p class="meta">{latest.data.guest.name} · {latest.data.guest.role}, {latest.data.guest.company}</p>
+            <span class="btn">Play episode <span class="arrow" aria-hidden="true"></span></span>
+          </div>
+        </a>
+      ) : (
+        <div class="teaser card">
+          <Portrait alt="Guest to be announced" label="Guest to be announced" />
+          <div>
+            <p class="eyebrow eyebrow--muted">Episode 01 · Recording now</p>
+            <h2 class="h2">The first guest is announced soon.</h2>
+            <hr class="rule" />
+            <p class="meta">Guest name · Role, Company</p>
+            <a class="btn" href="#signup">Get notified <span class="arrow" aria-hidden="true"></span></a>
+          </div>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <PitchBand />
+</Base>
+
+<style>
+  .hero { position: relative; min-height: min(820px, 88vh); display: flex; align-items: center; padding: 96px 0; overflow: hidden; }
+  .hero :global(.hero-img), .hero :global(.hero-img img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; }
+  .hero::before {
+    content: ''; position: absolute; inset: 0; z-index: 1;
+    background:
+      linear-gradient(90deg, rgba(11, 31, 45, 0.86) 0%, rgba(11, 31, 45, 0.68) 45%, rgba(11, 31, 45, 0.3) 78%, rgba(11, 31, 45, 0.1) 100%),
+      linear-gradient(0deg, rgba(11, 31, 45, 0.5), transparent 30%);
+  }
+  .hero-copy { position: relative; z-index: 2; width: 100%; }
+  .hero h1 { max-width: 20ch; margin: 24px 0 28px; }
+  .hero .lede { max-width: 52ch; color: var(--white-90); margin-bottom: 36px; }
+
+
+  .intro { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+  .intro > div { border-top: 2px solid var(--navy); padding-top: 22px; }
+  .intro h2 { margin-bottom: 16px; }
+
+  .teaser { display: grid; grid-template-columns: 320px 1fr; gap: 56px; align-items: center; padding: 40px; text-decoration: none; }
+  .teaser h2 { margin: 18px 0 20px; }
+  .teaser .rule { margin-bottom: 18px; }
+  .teaser .meta { margin-bottom: 28px; }
+
+  .host { display: grid; grid-template-columns: 200px 1fr; gap: 48px; align-items: center; padding-top: 40px; padding-bottom: 40px; border-top: 1px solid var(--navy-15); border-bottom: 1px solid var(--navy-15); }
+  .host h2 { margin: 14px 0 12px; }
+  .host-bio { font-size: clamp(17px, 1.4vw, 19px); max-width: 62ch; margin-bottom: 18px; }
+
+  @media (max-width: 959px) {
+    .hero::before { background: linear-gradient(180deg, rgba(11, 31, 45, 0.45), rgba(11, 31, 45, 0.78) 45%, rgba(11, 31, 45, 0.85)); }
+    .intro { grid-template-columns: 1fr; }
+    .teaser { grid-template-columns: 1fr; padding: 24px; gap: 28px; }
+    .teaser :global(.portrait) { max-width: 320px; }
+    .host { grid-template-columns: 1fr; gap: 24px; }
+    .host :global(.portrait) { max-width: 160px; }
+  }
+</style>

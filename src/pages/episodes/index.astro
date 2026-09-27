@@ -1,0 +1,74 @@
+---
+import Base from '../../layouts/Base.astro';
+import SignupForm from '../../components/SignupForm.astro';
+import Portrait from '../../components/Portrait.astro';
+import EpisodeRow from '../../components/EpisodeRow.astro';
+import { getEpisodes, pad } from '../../lib/episodes';
+import { SITE } from '../../site';
+
+const episodes = await getEpisodes();
+const [latest, ...rest] = episodes;
+const listen = SITE.listen.filter((l) => l.href);
+---
+
+<Base title="Episodes" description="Every Built West conversation, with show notes and full transcripts.">
+  <section class="page-hero">
+    <div class="wrap">
+      <p class="eyebrow">Episodes</p>
+      <h1 class="h1">Every conversation.</h1>
+      <p class="lede">New episodes on Apple Podcasts and Spotify. Show notes and full transcripts here.</p>
+      {listen.length > 0 && (
+        <div class="pills">{listen.map((l) => <a class="pill" href={l.href}>{l.label}</a>)}</div>
+      )}
+    </div>
+  </section>
+
+  <section class="section section--flush-top">
+    <div class="wrap">
+      {latest ? (
+        <>
+          <a class="feature" href={`/episodes/${latest.id}/`}>
+            <Portrait src={latest.data.guest.photo} alt={latest.data.guest.name} eager />
+            <div>
+              <p class="eyebrow eyebrow--muted">Latest · Episode {pad(latest.data.number)} · {latest.data.duration}</p>
+              <h2 class="feature-title">{latest.data.title}</h2>
+              <hr class="rule" />
+              <p class="meta">{latest.data.guest.name} · {latest.data.guest.role}, {latest.data.guest.company}</p>
+              <span class="btn">Play episode <span class="arrow" aria-hidden="true"></span></span>
+            </div>
+          </a>
+          {rest.length > 0 && <div class="list">{rest.map((ep) => <EpisodeRow episode={ep} />)}</div>}
+        </>
+      ) : (
+        <div class="empty navy tex">
+          <div>
+            <p class="eyebrow">Coming soon</p>
+            <h2 class="empty-title">The first conversations are being recorded now.</h2>
+            <SignupForm id="signup-episodes" dark />
+          </div>
+        </div>
+      )}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .page-hero { padding: clamp(64px, 9vw, 120px) 0 clamp(40px, 5vw, 72px); }
+  .page-hero h1 { margin: 20px 0 24px; }
+  .page-hero .lede { max-width: 60ch; }
+  .page-hero .pills { margin-top: 28px; }
+
+  .empty { border-radius: 4px; padding: clamp(40px, 6vw, 80px); }
+  .empty-title { font-size: clamp(30px, 4vw, 52px); line-height: 1.08; font-weight: 600; margin: 18px 0 28px; max-width: 28ch; }
+
+  .feature { display: grid; grid-template-columns: 5fr 7fr; gap: 56px; align-items: center; padding-bottom: 56px; text-decoration: none; }
+  .feature-title { font-size: clamp(32px, 4vw, 56px); line-height: 1.05; margin: 16px 0 20px; }
+  .feature .rule { margin-bottom: 18px; }
+  .feature .meta { margin-bottom: 28px; }
+  .list { border-bottom: 1px solid var(--navy-15); }
+
+  @media (max-width: 959px) {
+    .feature { grid-template-columns: 1fr; gap: 28px; }
+    .feature :global(.portrait) { max-width: 360px; }
+  }
+</style>

@@ -1,0 +1,19 @@
+---
+import Portrait from './Portrait.astro';
+import { pad, type Episode } from '../lib/episodes';
+interface Props { episode: Episode }
+const { episode } = Astro.props;
+const { number, title, guest } = episode.data;
+---
+
+<a class="ep-card" href={`/episodes/${episode.id}/`}>
+  <Portrait src={guest.photo} alt={guest.name} />
+  <h3>{title}</h3>
+  <p class="meta">Episode {pad(number)} · {guest.name}</p>
+</a>
+
+<style>
+  .ep-card { text-decoration: none; display: block; }
+  h3 { font-size: 24px; line-height: 1.15; margin: 14px 0 6px; }
+  .ep-card:hover h3 { text-decoration: underline; text-decoration-color: var(--orange); text-underline-offset: 5px; }
+</style>

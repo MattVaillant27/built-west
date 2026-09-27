@@ -1,0 +1,25 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Page not found" noindex>
+  <section class="lost navy tex">
+    <div class="wrap">
+      <p class="eyebrow">404</p>
+      <h1>Wrong turn.</h1>
+      <p class="lede">This page doesn’t exist. Head west instead.</p>
+      <div class="actions">
+        <a class="btn btn--inv" href="/">Home <span class="arrow" aria-hidden="true"></span></a>
+        <a class="btn btn--ghost" href="/episodes/">Episodes</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .lost { min-height: 72vh; display: flex; align-items: center; padding: 96px 0; }
+  .lost .wrap { width: 100%; }
+  h1 { font-size: clamp(56px, 10vw, 150px); line-height: 0.95; letter-spacing: -0.03em; margin: 20px 0 24px; }
+  .lede { color: var(--white-90); }
+  .actions { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 36px; }
+</style>

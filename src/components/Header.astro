@@ -1,0 +1,107 @@
+---
+import logoHorizontal from '../assets/brand/logo-horizontal.svg';
+import logoWordmark from '../assets/brand/logo-wordmark.svg';
+import SignupForm from './SignupForm.astro';
+import { SITE } from '../site';
+
+const path = Astro.url.pathname;
+const isActive = (href: string) => path === href || path.startsWith(href);
+---
+
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="brand" href="/" aria-label="Built West — home">
+      <img class="brand-full" src={logoHorizontal.src} width="750" height="220" alt="Built West — A BC Tech Podcast" />
+      <img class="brand-short" src={logoWordmark.src} width="750" height="170" alt="Built West" />
+    </a>
+    <nav aria-label="Main">
+      <ul class="links">
+        {SITE.nav.map((item) => (
+          <li><a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a></li>
+        ))}
+      </ul>
+      <a class="btn notify" href="/#signup">Get notified <span class="arrow" aria-hidden="true"></span></a>
+      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu-sheet">Menu</button>
+    </nav>
+  </div>
+
+  <div class="sheet" id="menu-sheet" hidden>
+    <div class="wrap">
+      <ul class="sheet-links">
+        <li><a href="/">Home</a></li>
+        {SITE.nav.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+      </ul>
+      <p class="eyebrow eyebrow--muted">Get notified</p>
+      <SignupForm id="signup-menu" />
+    </div>
+  </div>
+</header>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>('.menu-btn');
+  const sheet = document.getElementById('menu-sheet');
+  const setOpen = (open: boolean) => {
+    if (!btn || !sheet) return;
+    btn.setAttribute('aria-expanded', String(open));
+    btn.textContent = open ? 'Close' : 'Menu';
+    sheet.hidden = !open;
+    document.body.style.overflow = open ? 'hidden' : '';
+  };
+  btn?.addEventListener('click', () => setOpen(btn.getAttribute('aria-expanded') !== 'true'));
+  sheet?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false); });
+  matchMedia('(min-width: 960px)').addEventListener('change', (e) => { if (e.matches) setOpen(false); });
+
+  // Tighten the header once the page scrolls.
+  const header = document.querySelector('.site-header');
+  const onScroll = () => header?.classList.toggle('scrolled', scrollY > 8);
+  addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+</script>
+
+<style>
+  .site-header {
+    position: sticky; top: 0; z-index: 50;
+    background: var(--cream);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+  }
+  .site-header:global(.scrolled) { border-bottom-color: var(--navy-15); }
+  .bar { display: flex; align-items: center; justify-content: space-between; height: var(--header-h); transition: height 0.2s ease; }
+  .site-header:global(.scrolled) .bar { height: 60px; }
+
+  .brand img { width: auto; }
+  .brand-full { height: 60px; margin-left: -18px; }
+  .brand-short { display: none; height: 38px; margin-left: -14px; }
+
+  nav { display: flex; align-items: center; gap: 32px; }
+  .links { display: flex; gap: 32px; list-style: none; padding: 0; }
+  .links a { font: 500 14px var(--font-sans); text-decoration: none; text-underline-offset: 6px; }
+  .links a:hover, .links a[aria-current='page'] { text-decoration: underline; text-decoration-color: var(--orange); }
+
+  .menu-btn {
+    display: none; height: 40px; padding: 0 14px; background: none; cursor: pointer;
+    border: 1px solid var(--navy); border-radius: 2px;
+    font: 600 12px var(--font-sans); letter-spacing: 0.15em; text-transform: uppercase;
+  }
+
+  .sheet {
+    position: fixed; inset: var(--header-h) 0 0; overflow-y: auto;
+    background: var(--cream); border-top: 1px solid var(--navy-15); padding: 32px 0 48px;
+  }
+  .sheet-links { list-style: none; padding: 0; margin-bottom: 40px; }
+  .sheet-links a {
+    display: block; padding: 10px 0; text-decoration: none;
+    font: 700 clamp(34px, 9vw, 48px)/1.1 var(--font-display);
+  }
+  .sheet .eyebrow { margin-bottom: 4px; }
+
+  @media (max-width: 959px) {
+    .links, .notify { display: none; }
+    .menu-btn { display: inline-block; }
+  }
+  @media (max-width: 639px) {
+    .brand-full { display: none; }
+    .brand-short { display: block; }
+  }
+</style>
