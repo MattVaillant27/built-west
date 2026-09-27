@@ -78,6 +78,7 @@ const ogImage = new URL(image, Astro.site);
             done.className = 'lede form-success';
             done.setAttribute('role', 'status');
             done.innerHTML = form.dataset.success ?? 'Thanks.';
+            form.parentElement?.querySelector('.micro')?.remove();
             form.replaceWith(done);
           } catch {
             if (button) { button.disabled = false; button.innerHTML = label; }
