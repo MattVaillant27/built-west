@@ -28,7 +28,7 @@
 }
 
 @media (min-width: 640px) {
-  :root { --pad: 32px; }
+  :root { --pad: 32px; --header-h: 104px; }
 }
 
 *, *::before, *::after { box-sizing: border-box; }

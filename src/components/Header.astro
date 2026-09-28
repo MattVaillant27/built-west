@@ -12,7 +12,7 @@ const social = SITE.social.filter((s) => s.href);
 <header class="site-header">
   <div class="wrap bar">
     <a class="brand" href="/" aria-label="Built West — home">
-      <img class="brand-full" src={logoHorizontal.src} width="750" height="220" alt="Built West — A BC Tech Podcast" />
+      <img class="brand-full" src={logoHorizontal.src} width="691" height="170" alt="Built West — A BC Tech Podcast" />
       <img class="brand-short" src={logoWordmark.src} width="750" height="170" alt="Built West" />
     </a>
     <nav aria-label="Main">
@@ -75,10 +75,11 @@ const social = SITE.social.filter((s) => s.href);
   }
   .site-header:global(.scrolled) { border-bottom-color: var(--navy-15); }
   .bar { display: flex; align-items: center; justify-content: space-between; height: var(--header-h); transition: height 0.2s ease; }
-  .site-header:global(.scrolled) .bar { height: 60px; }
+  .site-header:global(.scrolled) .bar { height: 84px; }
 
   .brand img { width: auto; }
-  .brand-full { height: 60px; margin-left: -18px; }
+  .brand-full { height: 80px; transition: height 0.2s ease; }
+  .site-header:global(.scrolled) .brand-full { height: 64px; }
   .brand-short { display: none; height: 38px; margin-left: -14px; }
 
   nav { display: flex; align-items: center; gap: 32px; }
@@ -111,5 +112,6 @@ const social = SITE.social.filter((s) => s.href);
   @media (max-width: 639px) {
     .brand-full { display: none; }
     .brand-short { display: block; }
+    .site-header:global(.scrolled) .bar { height: var(--header-h); }
   }
 </style>

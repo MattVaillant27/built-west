@@ -36,7 +36,7 @@ Layouts are mostly cream and navy, forest for depth, orange as a single highligh
 
 ## Logo usage on the site
 
-- Header: `built-west-horizontal.svg` (wordmark + descriptor) or `built-west-wordmark.svg` on small screens.
+- Header: `built-west-horizontal.svg` (wordmark + descriptor) or `built-west-wordmark.svg` on small screens. The site copy `src/assets/brand/logo-horizontal.svg` has its viewBox trimmed to the artwork (`26 24 691 170`) so it fills the 80px header logo height; the artwork itself is unchanged.
 - Hero / coming-soon: `built-west-stacked.svg`.
 - Favicon / touch icons / social avatars: monogram and app icons (`svgs/built-west-app-*.svg`, PNGs at 2048px).
 - Open Graph / social share: `social banner image.png` (2055×765) — crop/export a 1200×630 version.
