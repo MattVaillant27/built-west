@@ -23,6 +23,12 @@ const year = new Date().getFullYear();
           <li><a href="/contact/">Contact</a></li>
         </ul>
       </nav>
+      {social.length > 0 && (
+        <nav aria-label="Follow Built West">
+          <p class="eyebrow">Follow</p>
+          <ul>{social.map((s) => <li><a href={s.href} rel="me noopener">{s.label}</a></li>)}</ul>
+        </nav>
+      )}
       <div>
         <p class="eyebrow">Get notified</p>
         <SignupForm id="signup-footer" button="Join" dark note={false} />
@@ -30,16 +36,13 @@ const year = new Date().getFullYear();
     </div>
     <div class="bottom">
       <span>© {year} {SITE.name}</span>
-      {social.length > 0 && (
-        <ul class="social">{social.map((s) => <li><a href={s.href} rel="me">{s.label}</a></li>)}</ul>
-      )}
     </div>
   </div>
 </footer>
 
 <style>
   .site-footer { padding: 72px 0 32px; font-size: 14px; }
-  .top { display: grid; grid-template-columns: 5fr 3fr 4fr; gap: 48px; padding-bottom: 48px; border-bottom: 1px solid var(--white-15); }
+  .top { display: grid; grid-template-columns: 4fr 2fr 2fr 4fr; gap: 48px; padding-bottom: 48px; border-bottom: 1px solid var(--white-15); }
   .logo { width: 180px; margin: -12px 0 16px -14px; }
   .tag { font-size: 22px; line-height: 1.3; font-weight: 600; max-width: 22ch; }
   .eyebrow { margin-bottom: 18px; }
@@ -48,8 +51,8 @@ const year = new Date().getFullYear();
   a { text-decoration: none; }
   a:hover { text-decoration: underline; text-decoration-color: var(--orange); text-underline-offset: 4px; }
   .bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 32px; padding-top: 24px; color: var(--white-70); }
-  .social { display: flex; gap: 20px; }
   @media (max-width: 959px) {
-    .top { grid-template-columns: 1fr; gap: 40px; }
+    .top { grid-template-columns: 1fr 1fr; gap: 40px; }
+    .top > div { grid-column: 1 / -1; }
   }
 </style>

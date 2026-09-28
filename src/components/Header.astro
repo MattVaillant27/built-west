@@ -6,6 +6,7 @@ import { SITE } from '../site';
 
 const path = Astro.url.pathname;
 const isActive = (href: string) => path === href || path.startsWith(href);
+const social = SITE.social.filter((s) => s.href);
 ---
 
 <header class="site-header">
@@ -33,6 +34,12 @@ const isActive = (href: string) => path === href || path.startsWith(href);
       </ul>
       <p class="eyebrow eyebrow--muted">Get notified</p>
       <SignupForm id="signup-menu" />
+      {social.length > 0 && (
+        <>
+          <p class="eyebrow eyebrow--muted follow">Follow</p>
+          <div class="pills">{social.map((s) => <a class="pill" href={s.href} rel="me noopener">{s.label}</a>)}</div>
+        </>
+      )}
     </div>
   </div>
 </header>
@@ -95,6 +102,7 @@ const isActive = (href: string) => path === href || path.startsWith(href);
     font: 700 clamp(34px, 9vw, 48px)/1.1 var(--font-display);
   }
   .sheet .eyebrow { margin-bottom: 4px; }
+  .sheet .follow { margin: 40px 0 12px; }
 
   @media (max-width: 959px) {
     .links, .notify { display: none; }

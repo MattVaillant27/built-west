@@ -13,11 +13,12 @@ export const SITE = {
     { label: 'About', href: '/about/' },
     { label: 'Contact', href: '/contact/' },
   ],
-  // TODO: add real URLs. Empty strings are hidden.
+  // Empty strings are hidden.
   social: [
-    { label: 'LinkedIn', href: '' },
-    { label: 'Instagram', href: '' },
-    { label: 'YouTube', href: '' },
+    { label: 'LinkedIn', href: 'https://www.linkedin.com/company/builtwest' },
+    { label: 'YouTube', href: 'https://www.youtube.com/@builtwest' },
+    { label: 'Instagram', href: 'https://www.instagram.com/builtwestBC' },
+    { label: 'X', href: 'https://x.com/BuiltWestBC' },
   ],
   listen: [
     { label: 'Apple Podcasts', href: '' },

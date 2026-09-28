@@ -46,6 +46,18 @@ const ogImage = new URL(image, Astro.site);
     <meta property="og:image" content={ogImage} />
     <meta property="og:locale" content="en_CA" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@BuiltWestBC" />
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        name: SITE.name,
+        url: SITE.url,
+        logo: new URL('/icon-512.png', Astro.site).toString(),
+        sameAs: SITE.social.filter((s) => s.href).map((s) => s.href),
+      })}
+    />
     <slot name="head" />
   </head>
   <body>
