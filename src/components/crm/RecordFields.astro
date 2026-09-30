@@ -1,0 +1,48 @@
+---
+import { FIELDS, STAGES, type Kind } from '../../crm/config';
+import type { CrmRecord } from '../../crm/store';
+
+interface Props {
+  kind: Kind;
+  record?: CrmRecord;
+}
+const { kind, record } = Astro.props;
+const value = (key: string) => (key === 'name' ? record?.name : record?.fields[key]) ?? '';
+const stages = STAGES[kind];
+const fields = FIELDS[kind];
+---
+
+<div class="grid-2">
+  {fields.map((f) => (
+    <div class="field">
+      <label for={`f-${f.key}`}>{f.label}{f.required ? ' *' : ''}</label>
+      {f.type === 'select' ? (
+        <select id={`f-${f.key}`} name={f.key}>
+          <option value="">—</option>
+          {f.options!.map((o) => <option selected={o === value(f.key)}>{o}</option>)}
+        </select>
+      ) : f.type === 'textarea' ? (
+        <textarea id={`f-${f.key}`} name={f.key}>{value(f.key)}</textarea>
+      ) : (
+        <input
+          id={`f-${f.key}`}
+          name={f.key}
+          type={f.type}
+          value={value(f.key)}
+          required={f.required}
+          placeholder={f.placeholder}
+          step={f.type === 'number' ? 'any' : undefined}
+          autocomplete="off"
+        />
+      )}
+    </div>
+  ))}
+  {stages && (
+    <div class="field">
+      <label for="f-stage">Stage</label>
+      <select id="f-stage" name="stage">
+        {stages.map((s) => <option selected={s === (record?.stage ?? stages[0])}>{s}</option>)}
+      </select>
+    </div>
+  )}
+</div>

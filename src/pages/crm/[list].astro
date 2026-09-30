@@ -1,0 +1,101 @@
+---
+import Crm from '../../layouts/Crm.astro';
+import Csrf from '../../components/crm/Csrf.astro';
+import RecordRow from '../../components/crm/RecordRow.astro';
+import { KINDS, STAGES, type Kind } from '../../crm/config';
+import { readPost } from '../../crm/request';
+import { formatDay, getRecord, listRecords, saveRecord, subtitle, today } from '../../crm/store';
+
+export const prerender = false;
+
+const kind = (Object.keys(KINDS) as Kind[]).find((k) => KINDS[k].path === `/crm/${Astro.params.list}`);
+if (!kind) return new Response('Not found', { status: 404 });
+
+// Stage change from the board.
+if (Astro.request.method === 'POST') {
+  const form = await readPost(Astro);
+  if (!form) return new Response('Forbidden', { status: 403 });
+  const r = await getRecord(String(form.get('id')));
+  const stage = String(form.get('stage'));
+  if (r && r.kind === kind && STAGES[kind]?.includes(stage)) {
+    r.stage = stage;
+    await saveRecord(r);
+  }
+  return Astro.redirect(Astro.url.pathname + Astro.url.search, 303);
+}
+
+const q = (Astro.url.searchParams.get('q') ?? '').trim().toLowerCase();
+const showArchived = Astro.url.searchParams.has('archived');
+const all = await listRecords(kind, { includeArchived: showArchived });
+const records = q
+  ? all.filter((r) => [r.name, r.stage, ...Object.values(r.fields)].join(' ').toLowerCase().includes(q))
+  : all;
+const stages = STAGES[kind];
+const now = today();
+const meta = KINDS[kind];
+---
+
+<Crm title={meta.plural}>
+  <div class="page-head">
+    <div>
+      <p class="eyebrow eyebrow--muted">{stages ? 'Pipeline' : 'Contacts'}</p>
+      <h1>{meta.plural}</h1>
+    </div>
+    <div class="actions">
+      <form method="GET" class="search">
+        <label class="sr-only" for="q">Search {meta.plural.toLowerCase()}</label>
+        <input id="q" name="q" type="search" value={q} placeholder={`Search ${meta.plural.toLowerCase()}`} />
+        {showArchived && <input type="hidden" name="archived" value="1" />}
+      </form>
+      <a class="btn btn--sm" href={`/crm/new?kind=${kind}`}>+ Add {meta.label.toLowerCase()}</a>
+    </div>
+  </div>
+
+  {stages ? (
+    <div class="board">
+      {stages.map((stage) => {
+        const inStage = records.filter((r) => r.stage === stage);
+        return (
+          <section class="col" aria-label={stage}>
+            <div class="col-head"><span>{stage}</span><span>{inStage.length}</span></div>
+            {inStage.map((r) => {
+              const due = r.followUp?.date;
+              return (
+                <div class="deal">
+                  <a href={`/crm/r/${r.id}`}>{r.name}</a>
+                  <p class="row-meta">
+                    {subtitle(r) || '—'}
+                    {r.kind === 'sponsor' && r.fields.value && <span> · ${Number(r.fields.value).toLocaleString('en-CA')}</span>}
+                    {due && <span class:list={['due', { overdue: due < now }]}><br />Follow up {formatDay(due)}</span>}
+                  </p>
+                  <form method="POST">
+                    <Csrf />
+                    <input type="hidden" name="id" value={r.id} />
+                    <label class="sr-only" for={`stage-${r.id}`}>Stage for {r.name}</label>
+                    <select id={`stage-${r.id}`} name="stage" data-autosubmit>
+                      {stages.map((s) => <option selected={s === r.stage}>{s}</option>)}
+                    </select>
+                    <noscript><button class="btn btn--sm btn--quiet" type="submit">Move</button></noscript>
+                  </form>
+                </div>
+              );
+            })}
+          </section>
+        );
+      })}
+    </div>
+  ) : records.length ? (
+    <ul class="rows">{records.map((r) => <RecordRow record={r} />)}</ul>
+  ) : (
+    <p class="empty-note">{q ? 'No matches.' : `No ${meta.plural.toLowerCase()} yet.`}</p>
+  )}
+
+  <p class="muted archived-toggle">
+    {showArchived ? <a class="link" href={meta.path}>Hide archived</a> : <a class="link" href={`${meta.path}?archived=1`}>Show archived</a>}
+  </p>
+</Crm>
+
+<style>
+  .search input { height: 38px; width: min(260px, 60vw); padding: 0 12px; border: 1px solid var(--navy-15); border-radius: 2px; background: #fff; font-size: 15px; }
+  .archived-toggle { margin-top: 24px; }
+</style>

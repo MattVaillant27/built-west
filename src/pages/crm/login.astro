@@ -1,0 +1,57 @@
+---
+import Crm from '../../layouts/Crm.astro';
+import { attemptLogin, configured, lockedFor, readSession, startSession } from '../../crm/auth';
+
+export const prerender = false;
+
+const rawNext = Astro.url.searchParams.get('next') ?? '/crm';
+const next = rawNext.startsWith('/crm') && !rawNext.startsWith('//') ? rawNext : '/crm';
+
+if (readSession(Astro.cookies)) return Astro.redirect(next);
+
+let error = '';
+const ready = configured();
+if (!ready) {
+  error = 'The CRM isn’t set up yet. Run the setup script and add the environment variables in Netlify.';
+} else if (Astro.request.method === 'POST') {
+  const minutes = await lockedFor();
+  if (minutes) {
+    error = `Too many attempts. Try again in ${minutes} minute${minutes === 1 ? '' : 's'}.`;
+  } else {
+    const form = await Astro.request.formData();
+    const ok = await attemptLogin(String(form.get('password') ?? ''), String(form.get('code') ?? ''));
+    if (ok) {
+      startSession(Astro.cookies, Astro.url.protocol === 'https:');
+      return Astro.redirect(next);
+    }
+    error = 'That password or code isn’t right.';
+    Astro.response.status = 401;
+  }
+}
+---
+
+<Crm title="Sign in" bare>
+  <div class="login">
+    <p class="eyebrow eyebrow--muted">Private</p>
+    <h1>Sign in</h1>
+    {error && <p class="flash" role="alert">{error}</p>}
+    {ready && (
+      <form method="POST">
+        <div class="field">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" autocomplete="current-password" required autofocus />
+        </div>
+        <div class="field">
+          <label for="code">Authenticator code</label>
+          <input id="code" name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9 ]{6,7}" maxlength="7" required />
+        </div>
+        <button class="btn" type="submit">Sign in <span class="arrow" aria-hidden="true"></span></button>
+      </form>
+    )}
+  </div>
+</Crm>
+
+<style>
+  .login { max-width: 420px; margin: 8vh auto 0; }
+  h1 { margin: 12px 0 28px; }
+</style>

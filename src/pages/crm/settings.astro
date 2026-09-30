@@ -1,0 +1,62 @@
+---
+import Crm from '../../layouts/Crm.astro';
+import Csrf from '../../components/crm/Csrf.astro';
+
+export const prerender = false;
+
+const token = process.env.CRM_CALENDAR_TOKEN ?? '';
+const feed = token ? `${Astro.url.origin}/crm/calendar/${token}.ics` : '';
+---
+
+<Crm title="Settings">
+  <div class="page-head">
+    <div>
+      <p class="eyebrow eyebrow--muted">Settings</p>
+      <h1>Settings</h1>
+    </div>
+  </div>
+
+  <section class="card block">
+    <h2 class="section-title" style="margin-top:0">Google Calendar</h2>
+    <p>Follow-ups appear in a calendar called “Built West follow-ups”. In Google Calendar, go to <strong>Other calendars → + → From URL</strong> and paste this link once. Google refreshes it every few hours; use “Add to Google Calendar” on a record when you need it there instantly.</p>
+    {feed ? (
+      <div class="copy-row">
+        <input id="feed" readonly value={feed} aria-label="Calendar feed URL" />
+        <button class="btn btn--sm" type="button" data-copy="feed">Copy</button>
+      </div>
+    ) : <p class="flash">CRM_CALENDAR_TOKEN isn’t set.</p>}
+    <p class="muted">Keep this link private: anyone with it can see your follow-up list. To revoke it, change CRM_CALENDAR_TOKEN in Netlify and re-add the calendar.</p>
+  </section>
+
+  <section class="card block">
+    <h2 class="section-title" style="margin-top:0">Backup</h2>
+    <p>Download every record (including archived) as a spreadsheet. A snapshot is also saved automatically every day.</p>
+    <a class="btn btn--sm" href="/crm/export.csv">Download CSV</a>
+  </section>
+
+  <section class="card block">
+    <h2 class="section-title" style="margin-top:0">Session</h2>
+    <form method="POST" action="/crm/logout">
+      <Csrf />
+      <button class="btn btn--sm btn--quiet" type="submit">Sign out on this device</button>
+    </form>
+  </section>
+</Crm>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((b) =>
+    b.addEventListener('click', async () => {
+      const input = document.getElementById(b.dataset.copy!) as HTMLInputElement;
+      await navigator.clipboard.writeText(input.value);
+      b.textContent = 'Copied';
+      setTimeout(() => (b.textContent = 'Copy'), 2000);
+    }),
+  );
+</script>
+
+<style>
+  .block { max-width: 760px; margin-bottom: 20px; }
+  .block p { margin-bottom: 14px; }
+  .copy-row { display: flex; gap: 10px; margin-bottom: 14px; }
+  .copy-row input { flex: 1; min-width: 0; height: 38px; padding: 0 10px; border: 1px solid var(--navy-15); border-radius: 2px; font-size: 13px; background: #fff; }
+</style>

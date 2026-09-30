@@ -1,0 +1,144 @@
+---
+import Crm from '../../../layouts/Crm.astro';
+import Csrf from '../../../components/crm/Csrf.astro';
+import RecordFields from '../../../components/crm/RecordFields.astro';
+import { KINDS } from '../../../crm/config';
+import { googleCalendarLink } from '../../../crm/calendar';
+import { readPost } from '../../../crm/request';
+import { addNote, applyFields, deleteRecord, formatDay, formatStamp, getRecord, saveRecord, today } from '../../../crm/store';
+
+export const prerender = false;
+
+const r = await getRecord(Astro.params.id ?? '');
+if (!r) return new Response('Not found', { status: 404 });
+const meta = KINDS[r.kind];
+const here = `/crm/r/${r.id}`;
+
+if (Astro.request.method === 'POST') {
+  const form = await readPost(Astro);
+  if (!form) return new Response('Forbidden', { status: 403 });
+  const action = String(form.get('action'));
+  if (action === 'save') applyFields(r, form);
+  if (action === 'note') addNote(r, String(form.get('note') ?? ''));
+  if (action === 'followup') {
+    const date = String(form.get('date') ?? '');
+    const time = String(form.get('time') ?? '');
+    const note = String(form.get('fnote') ?? '').trim().slice(0, 300);
+    r.followUp = /^\d{4}-\d{2}-\d{2}$/.test(date) ? { date, ...(/^\d{2}:\d{2}$/.test(time) && { time }), ...(note && { note }) } : null;
+  }
+  if (action === 'done' && r.followUp) {
+    addNote(r, `Follow-up done${r.followUp.note ? `: ${r.followUp.note}` : ''}.`);
+    r.followUp = null;
+  }
+  if (action === 'archive') r.archived = !r.archived;
+  if (action === 'delete') {
+    await deleteRecord(r.id);
+    return Astro.redirect(meta.path, 303);
+  }
+  await saveRecord(r);
+  return Astro.redirect(here, 303);
+}
+
+const site = Astro.url.origin;
+const gcal = googleCalendarLink(r, site);
+const f = r.followUp;
+const overdue = !!f?.date && f.date < today();
+---
+
+<Crm title={r.name}>
+  <div class="page-head">
+    <div>
+      <p class="eyebrow eyebrow--muted"><a class="link" href={meta.path}>{meta.plural}</a>{r.stage && ` · ${r.stage}`}{r.archived && ' · Archived'}</p>
+      <h1>{r.name}</h1>
+    </div>
+    <div class="actions">
+      {r.fields.email && <a class="btn btn--sm btn--quiet" href={`mailto:${r.fields.email}`}>Email</a>}
+      {r.fields.phone && <a class="btn btn--sm btn--quiet" href={`tel:${r.fields.phone}`}>Call</a>}
+      {r.fields.website && <a class="btn btn--sm btn--quiet" href={r.fields.website} rel="noopener noreferrer" target="_blank">Website</a>}
+      {r.fields.episodeSlug && <a class="btn btn--sm btn--quiet" href={`/episodes/${r.fields.episodeSlug}/`}>Episode</a>}
+    </div>
+  </div>
+
+  <div class="detail">
+    <div>
+      <section class="card">
+        <h2 class="section-title" style="margin-top:0">Follow-up</h2>
+        {f?.date && (
+          <p class="due-line">
+            <strong class:list={{ overdue }}>{overdue && 'Overdue · '}{formatDay(f.date)}{f.time && ` at ${f.time}`}</strong>
+            {f.note && <span> · {f.note}</span>}
+          </p>
+        )}
+        <form method="POST">
+          <Csrf />
+          <input type="hidden" name="action" value="followup" />
+          <div class="grid-2">
+            <div class="field"><label for="date">Date</label><input id="date" name="date" type="date" value={f?.date ?? ''} /></div>
+            <div class="field"><label for="time">Time (optional)</label><input id="time" name="time" type="time" value={f?.time ?? ''} /></div>
+          </div>
+          <div class="field"><label for="fnote">What to do</label><input id="fnote" name="fnote" value={f?.note ?? ''} placeholder="e.g. Send recording dates" /></div>
+          <div class="actions">
+            <button class="btn btn--sm" type="submit">Save follow-up</button>
+            {gcal && <a class="btn btn--sm btn--quiet" href={gcal} target="_blank" rel="noopener noreferrer">Add to Google Calendar</a>}
+          </div>
+        </form>
+        {f?.date && (
+          <form method="POST" class="done">
+            <Csrf />
+            <input type="hidden" name="action" value="done" />
+            <button class="link-btn" type="submit">Mark done (logs a note and clears it)</button>
+          </form>
+        )}
+      </section>
+
+      <section>
+        <h2 class="section-title">Notes</h2>
+        <form method="POST">
+          <Csrf />
+          <input type="hidden" name="action" value="note" />
+          <div class="field"><label class="sr-only" for="note">New note</label><textarea id="note" name="note" placeholder="Call notes, context, next steps…" required></textarea></div>
+          <button class="btn btn--sm" type="submit">Add note</button>
+        </form>
+        <div class="notes">
+          {r.notes.length ? r.notes.map((n) => (
+            <article class="note"><time datetime={n.at}>{formatStamp(n.at)}</time><p>{n.text}</p></article>
+          )) : <p class="empty-note">No notes yet.</p>}
+        </div>
+      </section>
+    </div>
+
+    <section class="card">
+      <h2 class="section-title" style="margin-top:0">Details</h2>
+      <form method="POST">
+        <Csrf />
+        <input type="hidden" name="action" value="save" />
+        <RecordFields kind={r.kind} record={r} />
+        <button class="btn btn--sm" type="submit">Save details</button>
+      </form>
+      <p class="muted stamps">Added {formatStamp(r.createdAt)} · Updated {formatStamp(r.updatedAt)}</p>
+      <div class="actions danger-zone">
+        <form method="POST">
+          <Csrf />
+          <input type="hidden" name="action" value="archive" />
+          <button class="btn btn--sm btn--quiet" type="submit">{r.archived ? 'Unarchive' : 'Archive'}</button>
+        </form>
+        <form method="POST" data-confirm={`Delete ${r.name} permanently? This can't be undone.`}>
+          <Csrf />
+          <input type="hidden" name="action" value="delete" />
+          <button class="btn btn--sm btn--danger" type="submit">Delete</button>
+        </form>
+      </div>
+    </section>
+  </div>
+</Crm>
+
+<style>
+  .detail .card .grid-2 { gap: 0 20px; }
+  .due-line { margin-bottom: 16px; }
+  .done { margin-top: 12px; }
+  .link-btn { background: none; border: 0; padding: 0; cursor: pointer; font-size: 14px; color: var(--coastal); text-decoration: underline; text-underline-offset: 4px; }
+  .notes { margin-top: 20px; }
+  .stamps { margin-top: 16px; }
+  .danger-zone { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--navy-15); }
+  textarea { min-height: 110px; }
+</style>

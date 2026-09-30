@@ -1,0 +1,61 @@
+---
+import Crm from '../../layouts/Crm.astro';
+import Csrf from '../../components/crm/Csrf.astro';
+import RecordFields from '../../components/crm/RecordFields.astro';
+import { KINDS, type Kind } from '../../crm/config';
+import { readPost } from '../../crm/request';
+import { addNote, applyFields, newRecord, saveRecord } from '../../crm/store';
+
+export const prerender = false;
+
+const kinds = Object.keys(KINDS) as Kind[];
+const requested = Astro.url.searchParams.get('kind') as Kind | null;
+const kind: Kind | null = requested && kinds.includes(requested) ? requested : null;
+
+if (Astro.request.method === 'POST' && kind) {
+  const form = await readPost(Astro);
+  if (!form) return new Response('Forbidden', { status: 403 });
+  const name = String(form.get('name') ?? '').trim();
+  if (name) {
+    const r = newRecord(kind, name);
+    applyFields(r, form);
+    addNote(r, String(form.get('note') ?? ''));
+    await saveRecord(r);
+    return Astro.redirect(`/crm/r/${r.id}`, 303);
+  }
+}
+---
+
+<Crm title="New">
+  <div class="page-head">
+    <div>
+      <p class="eyebrow eyebrow--muted">New</p>
+      <h1>{kind ? `Add a ${KINDS[kind].label.toLowerCase()}` : 'What are you adding?'}</h1>
+    </div>
+  </div>
+
+  {kind ? (
+    <form method="POST" class="card new-form">
+      <Csrf />
+      <RecordFields kind={kind} />
+      <div class="field">
+        <label for="f-note">First note (optional)</label>
+        <textarea id="f-note" name="note"></textarea>
+      </div>
+      <div class="actions">
+        <button class="btn" type="submit">Save <span class="arrow" aria-hidden="true"></span></button>
+        <a class="btn btn--quiet" href={KINDS[kind].path}>Cancel</a>
+      </div>
+    </form>
+  ) : (
+    <div class="choices">
+      {kinds.map((k) => <a class="btn btn--quiet" href={`/crm/new?kind=${k}`}>{KINDS[k].label}</a>)}
+    </div>
+  )}
+</Crm>
+
+<style>
+  .new-form { max-width: 860px; }
+  .choices { display: flex; flex-wrap: wrap; gap: 12px; }
+  .choices .btn { height: 64px; min-width: 160px; font-size: 14px; }
+</style>

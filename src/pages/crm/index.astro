@@ -1,0 +1,58 @@
+---
+import Crm from '../../layouts/Crm.astro';
+import RecordRow from '../../components/crm/RecordRow.astro';
+import { KINDS, STAGES, type Kind } from '../../crm/config';
+import { addDays, listRecords, today } from '../../crm/store';
+
+export const prerender = false;
+
+const records = await listRecords();
+const now = today();
+const weekEnd = addDays(now, 7);
+const byDue = (a: (typeof records)[number], b: (typeof records)[number]) =>
+  (a.followUp!.date + (a.followUp!.time ?? '')).localeCompare(b.followUp!.date + (b.followUp!.time ?? ''));
+
+const withFollowUp = records.filter((r) => r.followUp?.date);
+const overdue = withFollowUp.filter((r) => r.followUp!.date < now).sort(byDue);
+const thisWeek = withFollowUp.filter((r) => r.followUp!.date >= now && r.followUp!.date <= weekEnd).sort(byDue);
+const leads = records
+  .filter((r) => r.kind === 'guest' && r.fields.source === 'Pitch form' && r.stage === 'Idea')
+  .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+  .slice(0, 10);
+
+const counts = (['guest', 'sponsor'] as Kind[]).map((k) => {
+  const open = records.filter((r) => r.kind === k && r.stage !== STAGES[k]!.at(-1));
+  return { kind: k, open: open.length };
+});
+const partners = records.filter((r) => r.kind === 'partner').length;
+---
+
+<Crm title="Today">
+  <div class="page-head">
+    <div>
+      <p class="eyebrow eyebrow--muted">Today</p>
+      <h1>What needs doing</h1>
+    </div>
+    <p class="muted">
+      {counts.map((c) => <a class="link" href={KINDS[c.kind].path}>{c.open} open {KINDS[c.kind].plural.toLowerCase()}</a>)}
+      {' · '}<a class="link" href="/crm/partners">{partners} partners</a>
+    </p>
+  </div>
+
+  <h2 class="section-title">Overdue</h2>
+  {overdue.length ? <ul class="rows">{overdue.map((r) => <RecordRow record={r} showKind />)}</ul> : <p class="empty-note">Nothing overdue.</p>}
+
+  <h2 class="section-title">Next 7 days</h2>
+  {thisWeek.length ? <ul class="rows">{thisWeek.map((r) => <RecordRow record={r} showKind />)}</ul> : <p class="empty-note">No follow-ups this week.</p>}
+
+  <h2 class="section-title">New guest pitches</h2>
+  {leads.length ? (
+    <ul class="rows">{leads.map((r) => <RecordRow record={r} />)}</ul>
+  ) : (
+    <p class="empty-note">No new pitches. Submissions from the site’s Pitch a guest form land here.</p>
+  )}
+</Crm>
+
+<style>
+  .muted a { margin-right: 6px; }
+</style>

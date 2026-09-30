@@ -1,0 +1,6 @@
+---
+import { csrfToken } from '../../crm/auth';
+const s = Astro.locals.session;
+---
+
+{s && <input type="hidden" name="_csrf" value={csrfToken(s)} />}

@@ -1,0 +1,26 @@
+---
+import { KINDS } from '../../crm/config';
+import { formatDay, subtitle, today, type CrmRecord } from '../../crm/store';
+
+interface Props {
+  record: CrmRecord;
+  showKind?: boolean;
+}
+const { record: r, showKind = false } = Astro.props;
+const due = r.followUp?.date;
+const overdue = !!due && due < today();
+---
+
+<li>
+  <a class="row-link" href={`/crm/r/${r.id}`}>
+    <span>
+      <strong>{r.name}</strong>
+      {showKind && <span class="tag">{KINDS[r.kind].label}</span>}
+      <span class="row-meta" style="display:block">{[subtitle(r), r.stage].filter(Boolean).join(' · ')}</span>
+    </span>
+    <span class="row-side">
+      {due && <span class:list={{ overdue }}>{overdue ? 'Overdue · ' : ''}{formatDay(due)}{r.followUp?.time ? ` ${r.followUp.time}` : ''}</span>}
+      {r.followUp?.note && <span style="display:block">{r.followUp.note}</span>}
+    </span>
+  </a>
+</li>
