@@ -116,5 +116,8 @@ export const csrfToken = (s: Session) => hmac(`csrf:${s.sid}`);
 export const checkCsrf = (s: Session, token: FormDataEntryValue | null) =>
   typeof token === 'string' && safeEqual(token, csrfToken(s));
 
+/** API token check for /crm/api (used by Claude chats to add contacts). */
+export const apiTokenOk = (token: string) => !!process.env.CRM_API_TOKEN && token.length > 0 && safeEqual(token, env('CRM_API_TOKEN'));
+
 /** Calendar feed token check (the feed URL can't carry a cookie). */
 export const calendarTokenOk = (token: string) => !!process.env.CRM_CALENDAR_TOKEN && safeEqual(token, env('CRM_CALENDAR_TOKEN'));

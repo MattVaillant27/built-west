@@ -3,7 +3,8 @@
 import { defineMiddleware } from 'astro:middleware';
 import { readSession } from './crm/auth';
 
-const PUBLIC_CRM = [/^\/crm\/login\/?$/, /^\/crm\/calendar\/[^/]+\.ics$/];
+// These authenticate themselves: login form, token-in-URL calendar feed, bearer-token API.
+const PUBLIC_CRM = [/^\/crm\/login\/?$/, /^\/crm\/calendar\/[^/]+\.ics$/, /^\/crm\/api\//];
 
 export const onRequest = defineMiddleware(async (ctx, next) => {
   const path = ctx.url.pathname;
