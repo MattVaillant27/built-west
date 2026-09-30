@@ -2,7 +2,7 @@
 import Crm from '../../layouts/Crm.astro';
 import Csrf from '../../components/crm/Csrf.astro';
 import RecordRow from '../../components/crm/RecordRow.astro';
-import { KINDS, STAGES, type Kind } from '../../crm/config';
+import { FIELDS, KINDS, STAGES, type Kind } from '../../crm/config';
 import { readPost } from '../../crm/request';
 import { formatDay, getRecord, listRecords, saveRecord, subtitle, today } from '../../crm/store';
 
@@ -27,9 +27,13 @@ if (Astro.request.method === 'POST') {
 const q = (Astro.url.searchParams.get('q') ?? '').trim().toLowerCase();
 const showArchived = Astro.url.searchParams.has('archived');
 const all = await listRecords(kind, { includeArchived: showArchived });
-const records = q
-  ? all.filter((r) => [r.name, r.stage, ...Object.values(r.fields)].join(' ').toLowerCase().includes(q))
-  : all;
+const filterFields = FIELDS[kind].filter((f) => f.filter);
+const active = filterFields
+  .map((f) => ({ key: f.key, value: Astro.url.searchParams.get(f.key) ?? '' }))
+  .filter((a) => a.value);
+const records = all
+  .filter((r) => !q || [r.name, r.stage, ...Object.values(r.fields)].join(' ').toLowerCase().includes(q))
+  .filter((r) => active.every((a) => r.fields[a.key] === a.value));
 const stages = STAGES[kind];
 const now = today();
 const meta = KINDS[kind];
@@ -42,7 +46,7 @@ const meta = KINDS[kind];
       <h1>{meta.plural}</h1>
     </div>
     <div class="actions">
-      <form method="GET" class="search">
+      <form method="GET" class="search" id="filters">
         <label class="sr-only" for="q">Search {meta.plural.toLowerCase()}</label>
         <input id="q" name="q" type="search" value={q} placeholder={`Search ${meta.plural.toLowerCase()}`} />
         {showArchived && <input type="hidden" name="archived" value="1" />}
@@ -50,6 +54,22 @@ const meta = KINDS[kind];
       <a class="btn btn--sm" href={`/crm/new?kind=${kind}`}>+ Add {meta.label.toLowerCase()}</a>
     </div>
   </div>
+
+  {filterFields.length > 0 && (
+    <div class="filters">
+      {filterFields.map((f) => (
+        <label>
+          <span class="sr-only">{f.label}</span>
+          <select name={f.key} form="filters" data-autosubmit class:list={{ on: active.some((a) => a.key === f.key) }}>
+            <option value="">{f.label}: all</option>
+            {f.options!.map((o) => <option selected={Astro.url.searchParams.get(f.key) === o}>{o}</option>)}
+          </select>
+        </label>
+      ))}
+      {(active.length > 0 || q) && <a class="link" href={meta.path}>Clear</a>}
+      <span class="muted">{records.length} shown</span>
+    </div>
+  )}
 
   {stages ? (
     <div class="board">
@@ -68,6 +88,13 @@ const meta = KINDS[kind];
                     {r.kind === 'sponsor' && r.fields.value && <span> · ${Number(r.fields.value).toLocaleString('en-CA')}</span>}
                     {due && <span class:list={['due', { overdue: due < now }]}><br />Follow up {formatDay(due)}</span>}
                   </p>
+                  {r.kind === 'guest' && (
+                    <p class="chips">
+                      {[r.fields.profile, r.fields.warmth, r.fields.timing, r.fields.tags?.split(',').map((t) => t.trim()).includes('Woman') ? 'Woman' : '']
+                        .filter(Boolean)
+                        .map((t) => <span class="tag">{t}</span>)}
+                    </p>
+                  )}
                   <form method="POST">
                     <Csrf />
                     <input type="hidden" name="id" value={r.id} />
@@ -98,4 +125,9 @@ const meta = KINDS[kind];
 <style>
   .search input { height: 38px; width: min(260px, 60vw); padding: 0 12px; border: 1px solid var(--navy-15); border-radius: 2px; background: #fff; font-size: 15px; }
   .archived-toggle { margin-top: 24px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 4px; margin: -2px 0 8px; }
+  .chips .tag { font-size: 10px; padding: 2px 6px; }
+  .filters { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin-bottom: 18px; }
+  .filters select { height: 36px; padding: 0 8px; border: 1px solid var(--navy-15); border-radius: 2px; background: #fff; font-size: 14px; }
+  .filters select.on { border-color: var(--navy); font-weight: 600; }
 </style>

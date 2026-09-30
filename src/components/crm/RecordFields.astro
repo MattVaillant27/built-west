@@ -14,12 +14,13 @@ const fields = FIELDS[kind];
 
 <div class="grid-2">
   {fields.map((f) => (
-    <div class="field">
+    <div class:list={['field', { wide: f.type === 'textarea' }]}>
       <label for={`f-${f.key}`}>{f.label}{f.required ? ' *' : ''}</label>
       {f.type === 'select' ? (
         <select id={`f-${f.key}`} name={f.key}>
           <option value="">—</option>
           {f.options!.map((o) => <option selected={o === value(f.key)}>{o}</option>)}
+          {value(f.key) && !f.options!.includes(value(f.key)) && <option selected>{value(f.key)}</option>}
         </select>
       ) : f.type === 'textarea' ? (
         <textarea id={`f-${f.key}`} name={f.key}>{value(f.key)}</textarea>
@@ -46,3 +47,8 @@ const fields = FIELDS[kind];
     </div>
   )}
 </div>
+
+<style>
+  .wide { grid-column: 1 / -1; }
+  textarea { min-height: 90px; }
+</style>

@@ -35,6 +35,12 @@ const feed = token ? `${Astro.url.origin}/crm/calendar/${token}.ics` : '';
   </section>
 
   <section class="card block">
+    <h2 class="section-title" style="margin-top:0">Import</h2>
+    <p>Add many people at once from a CSV file, or restore from a downloaded backup. Anyone already in the CRM is skipped.</p>
+    <a class="btn btn--sm" href="/crm/import">Import CSV</a>
+  </section>
+
+  <section class="card block">
     <h2 class="section-title" style="margin-top:0">Session</h2>
     <form method="POST" action="/crm/logout">
       <Csrf />

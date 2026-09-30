@@ -1,0 +1,65 @@
+---
+import Crm from '../../layouts/Crm.astro';
+import Csrf from '../../components/crm/Csrf.astro';
+import { KINDS, type Kind } from '../../crm/config';
+import { importCsv, type ImportResult } from '../../crm/importCsv';
+import { readPost } from '../../crm/request';
+
+export const prerender = false;
+
+const MAX_BYTES = 2_000_000;
+let result: ImportResult | null = null;
+let error = '';
+
+if (Astro.request.method === 'POST') {
+  const form = await readPost(Astro);
+  if (!form) return new Response('Forbidden', { status: 403 });
+  const file = form.get('file');
+  const kind = String(form.get('kind')) as Kind;
+  if (!(file instanceof File) || !file.size) error = 'Choose a CSV file first.';
+  else if (file.size > MAX_BYTES) error = 'That file is too big (2 MB max).';
+  else if (!Object.hasOwn(KINDS, kind)) error = 'Pick what the rows are.';
+  else result = await importCsv(await file.text(), kind);
+}
+---
+
+<Crm title="Import">
+  <div class="page-head">
+    <div>
+      <p class="eyebrow eyebrow--muted"><a class="link" href="/crm/settings">Settings</a></p>
+      <h1>Import from CSV</h1>
+    </div>
+  </div>
+
+  {error && <p class="flash" role="alert">{error}</p>}
+  {result && (
+    <div class="flash" role="status">
+      <p><strong>{result.created} added.</strong>{result.skipped.length > 0 && ` ${result.skipped.length} already in the CRM, skipped.`}</p>
+      {result.errors.length > 0 && <ul>{result.errors.map((e) => <li>{e}</li>)}</ul>}
+      {result.created > 0 && <p><a class="link" href="/crm/guests">Go to Guests</a></p>}
+    </div>
+  )}
+
+  <form method="POST" enctype="multipart/form-data" class="card import">
+    <Csrf />
+    <div class="field">
+      <label for="file">CSV file</label>
+      <input id="file" name="file" type="file" accept=".csv,text/csv" required />
+    </div>
+    <div class="field">
+      <label for="kind">Rows without a “kind” column are</label>
+      <select id="kind" name="kind">
+        {(Object.keys(KINDS) as Kind[]).map((k) => <option value={k}>{KINDS[k].plural}</option>)}
+      </select>
+    </div>
+    <button class="btn btn--sm" type="submit">Import</button>
+    <p class="muted hint">Columns are matched by name: <code>name</code> (required), <code>stage</code>, <code>role</code>, <code>company</code>, <code>email</code>, <code>region</code>, <code>lane</code>, <code>warmth</code>, <code>timing</code>, <code>angle</code>, <code>note</code>, and so on. People already in the CRM (same name) are skipped, so importing the same file twice is safe.</p>
+  </form>
+</Crm>
+
+<style>
+  .import { max-width: 640px; }
+  .import input[type='file'] { border: 0; padding: 8px 0; }
+  .hint { margin-top: 16px; }
+  .flash ul { margin: 8px 0 0 18px; font-size: 14px; }
+</style>
