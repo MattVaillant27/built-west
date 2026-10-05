@@ -20,6 +20,12 @@ export const SITE = {
     { label: 'Instagram', href: 'https://www.instagram.com/builtwestBC' },
     { label: 'X', href: 'https://x.com/BuiltWestBC' },
   ],
+  // Analytics/ad IDs. Empty = off. Nothing loads before cookie consent (see src/components/Tracking.astro).
+  tracking: {
+    ga4: '', // Google Analytics 4 Measurement ID, e.g. G-XXXXXXXXXX
+    metaPixel: '', // Meta (Instagram/Facebook) dataset/pixel ID
+    metaDomainVerification: '', // content value of Meta's facebook-domain-verification tag
+  },
   listen: [
     { label: 'Apple Podcasts', href: '' },
     { label: 'Spotify', href: '' },

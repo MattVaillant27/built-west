@@ -26,7 +26,7 @@ const year = new Date().getFullYear();
       {social.length > 0 && (
         <nav aria-label="Follow Built West">
           <p class="eyebrow">Follow</p>
-          <ul>{social.map((s) => <li><a href={s.href} rel="me noopener">{s.label}</a></li>)}</ul>
+          <ul>{social.map((s) => <li><a href={s.href} rel="me noopener" data-track="social" data-platform={s.label}>{s.label}</a></li>)}</ul>
         </nav>
       )}
       <div>
@@ -36,6 +36,10 @@ const year = new Date().getFullYear();
     </div>
     <div class="bottom">
       <span>© {year} {SITE.name}</span>
+      <span class="legal">
+        <a href="/privacy/">Privacy</a>
+        {(SITE.tracking.ga4 || SITE.tracking.metaPixel) && <button type="button" class="linkish" data-open-consent>Cookie settings</button>}
+      </span>
     </div>
   </div>
 </footer>
@@ -50,6 +54,9 @@ const year = new Date().getFullYear();
   nav li { margin-bottom: 10px; }
   a { text-decoration: none; }
   a:hover { text-decoration: underline; text-decoration-color: var(--orange); text-underline-offset: 4px; }
+  .legal { display: flex; gap: 20px; }
+  .linkish { background: none; border: 0; padding: 0; color: inherit; font: inherit; cursor: pointer; }
+  .linkish:hover { text-decoration: underline; text-decoration-color: var(--orange); text-underline-offset: 4px; }
   .bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 32px; padding-top: 24px; color: var(--white-70); }
   @media (max-width: 959px) {
     .top { grid-template-columns: 1fr 1fr; gap: 40px; }

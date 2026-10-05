@@ -37,7 +37,7 @@ const social = SITE.social.filter((s) => s.href);
       {social.length > 0 && (
         <>
           <p class="eyebrow eyebrow--muted follow">Follow</p>
-          <div class="pills">{social.map((s) => <a class="pill" href={s.href} rel="me noopener">{s.label}</a>)}</div>
+          <div class="pills">{social.map((s) => <a class="pill" href={s.href} rel="me noopener" data-track="social" data-platform={s.label}>{s.label}</a>)}</div>
         </>
       )}
     </div>

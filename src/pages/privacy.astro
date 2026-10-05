@@ -1,0 +1,59 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE } from '../site';
+
+const updated = 'October 5, 2026';
+const tracking = !!(SITE.tracking.ga4 || SITE.tracking.metaPixel);
+---
+
+<Base title="Privacy" description="How Built West handles your information.">
+  <section class="page-hero">
+    <div class="wrap">
+      <p class="eyebrow">Privacy</p>
+      <h1 class="h1">Your information, plainly.</h1>
+      <p class="lede">What we collect on builtwest.ca, why, and the choices you have. Last updated {updated}.</p>
+    </div>
+  </section>
+
+  <section class="section section--flush-top">
+    <div class="wrap prose prose--wide policy">
+      <h2>Who we are</h2>
+      <p>Built West is a podcast about the people building technology in British Columbia, run by {SITE.host.name} in Victoria, BC. Questions about this policy or your information go to <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.</p>
+
+      <h2>What you give us</h2>
+      <p><strong>Updates sign-up.</strong> Your email address, used only to send Built West updates. You can unsubscribe at any time.</p>
+      <p><strong>Pitch a guest.</strong> Your name and email, and the details you share about the person you’re suggesting. We use this to consider guests and may follow up with you. Pitches are kept in our private guest-planning tools.</p>
+      <p><strong>Contact.</strong> Your name, email and message, used to reply to you.</p>
+      <p>Form submissions are received and stored by our website host, Netlify.</p>
+
+      <h2>Cookies, analytics and ads</h2>
+      <p>With your permission, we use:</p>
+      <ul>
+        <li><strong>Google Analytics</strong> to understand how people find and use the site (pages viewed, how you arrived, sign-ups), in aggregate.</li>
+        <li><strong>Meta Pixel</strong> (Instagram and Facebook) to measure whether our ads lead to sign-ups and to show our ads to people who’ve visited the site.</li>
+      </ul>
+      <p>These only set cookies after you click <em>Accept</em>. If you decline, no analytics or advertising cookies are set; Google may still receive basic, cookieless signals (for example, that a page was viewed) that are used only in aggregate.</p>
+      {tracking && <p>You can change your choice at any time: <button type="button" class="inline-btn" data-open-consent>open cookie settings</button>.</p>}
+
+      <h2>Who else handles it</h2>
+      <p>We don’t sell your information. We share it only with the services that run the site and the show: Netlify (hosting and forms), Google (analytics), Meta (ad measurement) and ImprovMX (email forwarding). Some of these providers store data outside Canada, including in the United States.</p>
+
+      <h2>How long we keep it</h2>
+      <p>We keep sign-ups until you unsubscribe, and pitches and messages for as long as they’re useful for planning the show. Ask and we’ll delete yours sooner.</p>
+
+      <h2>Your choices</h2>
+      <p>You can ask to see, correct or delete the information we hold about you, or withdraw your consent, by emailing <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .page-hero { padding: clamp(64px, 9vw, 120px) 0 clamp(32px, 4vw, 56px); }
+  .page-hero h1 { margin: 20px 0 24px; max-width: 22ch; }
+  .page-hero .lede { max-width: 60ch; }
+  .policy h2 { font-size: clamp(22px, 2.2vw, 28px); margin: 40px 0 12px; }
+  .policy h2:first-child { margin-top: 0; }
+  .policy ul { margin: 0 0 1.1em 1.2em; max-width: 82ch; }
+  .policy li { margin-bottom: 8px; }
+  .inline-btn { background: none; border: 0; padding: 0; font: inherit; color: inherit; text-decoration: underline; text-decoration-color: var(--orange); text-underline-offset: 4px; cursor: pointer; }
+</style>

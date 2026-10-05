@@ -18,7 +18,7 @@ const listen = SITE.listen.filter((l) => l.href);
       <h1 class="h1">Every conversation.</h1>
       <p class="lede">New episodes on Apple Podcasts and Spotify. Show notes and full transcripts here.</p>
       {listen.length > 0 && (
-        <div class="pills">{listen.map((l) => <a class="pill" href={l.href}>{l.label}</a>)}</div>
+        <div class="pills">{listen.map((l) => <a class="pill" href={l.href} data-track="listen" data-platform={l.label}>{l.label}</a>)}</div>
       )}
     </div>
   </section>

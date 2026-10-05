@@ -1,0 +1,71 @@
+---
+// Analytics + ad tags for the PUBLIC site only (never include in the CRM layout).
+// Rule: nothing that sets cookies loads before the visitor accepts in the consent banner.
+// - GA4 runs in Google Consent Mode v2 with everything denied until Accept (cookieless pings only).
+// - Meta Pixel script isn't even loaded until Accept.
+// IDs live in src/site.ts → SITE.tracking; empty = that tag is off.
+import { SITE } from '../site';
+
+const { ga4, metaPixel } = SITE.tracking;
+---
+
+<script is:inline define:vars={{ ga4, metaPixel }}>
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function () { dataLayer.push(arguments); };
+  var stored = null;
+  try { stored = localStorage.getItem('bw-consent'); } catch (e) {}
+  var granted = stored === 'granted';
+  gtag('consent', 'default', {
+    analytics_storage: granted ? 'granted' : 'denied',
+    ad_storage: granted ? 'granted' : 'denied',
+    ad_user_data: granted ? 'granted' : 'denied',
+    ad_personalization: granted ? 'granted' : 'denied',
+    wait_for_update: 500,
+  });
+
+  if (ga4) {
+    var s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://www.googletagmanager.com/gtag/js?id=' + ga4;
+    document.head.appendChild(s);
+    gtag('js', new Date());
+    gtag('config', ga4);
+  }
+
+  function loadMeta() {
+    if (!metaPixel || window.fbq) return;
+    !(function (f, b, e, v, n, t, s) {
+      if (f.fbq) return; n = f.fbq = function () { n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments); };
+      if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0'; n.queue = [];
+      t = b.createElement(e); t.async = !0; t.src = v; s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s);
+    })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', metaPixel);
+    fbq('track', 'PageView');
+  }
+
+  // Called by the consent banner.
+  window.bwConsent = function (choice) {
+    try { localStorage.setItem('bw-consent', choice); } catch (e) {}
+    var v = choice === 'granted' ? 'granted' : 'denied';
+    gtag('consent', 'update', { analytics_storage: v, ad_storage: v, ad_user_data: v, ad_personalization: v });
+    if (choice === 'granted') loadMeta();
+    else if (window.fbq) fbq('consent', 'revoke');
+  };
+  if (granted) loadMeta();
+
+  // One call sends an event to GA4 and (if consented and mapped) Meta.
+  var META_EVENTS = { sign_up: 'Lead', generate_lead: 'Lead', contact_submit: 'Contact' };
+  window.bwTrack = function (event, params) {
+    try {
+      if (ga4) gtag('event', event, params || {});
+      if (window.fbq && META_EVENTS[event]) fbq('track', META_EVENTS[event], params || {});
+    } catch (e) {}
+  };
+
+  // Clicks on links marked data-track="listen" or "social".
+  document.addEventListener('click', function (e) {
+    var a = e.target && e.target.closest ? e.target.closest('a[data-track]') : null;
+    if (!a) return;
+    window.bwTrack(a.dataset.track + '_click', { platform: a.dataset.platform || a.textContent.trim(), link_url: a.href });
+  });
+</script>

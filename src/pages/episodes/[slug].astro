@@ -74,7 +74,7 @@ const jsonLd = {
       {listenLinks.length > 0 && (
         <div class="listen-on">
           <span class="eyebrow eyebrow--muted">Listen on</span>
-          <div class="pills">{listenLinks.map((l) => <a class="pill" href={l.href}>{l.label}</a>)}</div>
+          <div class="pills">{listenLinks.map((l) => <a class="pill" href={l.href} data-track="listen" data-platform={l.label}>{l.label}</a>)}</div>
         </div>
       )}
     </div>

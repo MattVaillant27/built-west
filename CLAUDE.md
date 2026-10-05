@@ -62,6 +62,14 @@ Layouts are mostly cream and navy, forest for depth, orange as a single highligh
 - Forms (Netlify): `notify` (email), `pitch`, `contact`. They only submit on Netlify; locally they show the error state.
 - `design/` — wireframes and source assets (not deployed). `public/` — favicons, OG image, `topo.svg` texture.
 
+## Tracking & consent
+
+- IDs in `src/site.ts` → `SITE.tracking` (`ga4`, `metaPixel`, `metaDomainVerification`); empty = off.
+- `src/components/Tracking.astro` (in `Base.astro` head): Google Consent Mode v2, everything **denied** until the visitor accepts; GA4 loads with the ID; **Meta Pixel script loads only after Accept**. `window.bwTrack(event, params)` sends to GA4 and maps to Meta (`sign_up`/`generate_lead` → Lead, `contact_submit` → Contact).
+- `src/components/ConsentBanner.astro`: Accept/Decline, stored in `localStorage` key `bw-consent`; any `[data-open-consent]` element reopens it (footer "Cookie settings", Privacy page).
+- Events: form successes (`sign_up`, `generate_lead`, `contact_submit`) fire from the form handler in `Base.astro`; links with `data-track="listen|social"` + `data-platform` fire `listen_click` / `social_click`.
+- Rules: nothing that sets cookies loads before consent; never add tracking to `src/layouts/Crm.astro` (`/crm`). Update `src/pages/privacy.astro` when adding any new tag or service.
+
 ## CRM (`/crm`, private, single user)
 
 - Guests + Sponsors pipelines, Partners list, notes, follow-ups, Google Calendar feed. Data in **Netlify Blobs** store `crm` (`records/<id>` JSON; `meta/login`; `backups/<date>`).

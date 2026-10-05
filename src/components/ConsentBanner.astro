@@ -1,0 +1,58 @@
+---
+// Cookie consent bar. Shown until the visitor chooses; "Cookie settings" in the footer reopens it.
+import { SITE } from '../site';
+const enabled = !!(SITE.tracking.ga4 || SITE.tracking.metaPixel);
+---
+
+{enabled && (
+  <div class="consent" id="consent" role="region" aria-label="Cookie choices" hidden>
+    <div class="wrap inner">
+      <p>
+        We use cookies to understand how people find Built West and to measure our ads. <a class="link" href="/privacy/">Privacy</a>
+      </p>
+      <div class="actions">
+        <button class="btn btn--sm-c btn--ghost-navy" type="button" data-consent="denied">Decline</button>
+        <button class="btn btn--sm-c" type="button" data-consent="granted">Accept</button>
+      </div>
+    </div>
+  </div>
+)}
+
+<script>
+  const bar = document.getElementById('consent');
+  if (bar) {
+    let choice: string | null = null;
+    try { choice = localStorage.getItem('bw-consent'); } catch {}
+    if (!choice) bar.hidden = false;
+    bar.querySelectorAll<HTMLButtonElement>('[data-consent]').forEach((b) =>
+      b.addEventListener('click', () => {
+        (window as unknown as { bwConsent?: (c: string) => void }).bwConsent?.(b.dataset.consent!);
+        bar.hidden = true;
+      }),
+    );
+    document.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).closest('[data-open-consent]')) {
+        bar.hidden = false;
+        bar.querySelector<HTMLButtonElement>('[data-consent="granted"]')?.focus();
+      }
+    });
+  }
+</script>
+
+<style>
+  .consent {
+    position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 60;
+    background: var(--cream); border: 1px solid var(--navy-15); border-radius: 4px;
+    box-shadow: 0 8px 30px rgba(11, 31, 45, 0.15);
+  }
+  .inner { display: flex; align-items: center; justify-content: space-between; gap: 16px 24px; padding: 16px 20px; flex-wrap: wrap; }
+  p { font-size: 15px; max-width: 62ch; }
+  .actions { display: flex; gap: 10px; }
+  .btn--sm-c { height: 40px; padding: 0 18px; font-size: 12px; }
+  .btn--ghost-navy { background: transparent; color: var(--navy); box-shadow: inset 0 0 0 1px var(--navy); }
+  .btn--ghost-navy:hover { background: var(--navy-08); }
+  @media (max-width: 639px) {
+    .actions { width: 100%; }
+    .actions .btn { flex: 1; }
+  }
+</style>

@@ -8,6 +8,8 @@ import '@fontsource-variable/source-serif-4/opsz-italic.css';
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import Tracking from '../components/Tracking.astro';
+import ConsentBanner from '../components/ConsentBanner.astro';
 import { SITE } from '../site';
 
 interface Props {
@@ -37,6 +39,8 @@ const ogImage = new URL(image, Astro.site);
     <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="theme-color" content="#0B1F2D" />
+    {SITE.tracking.metaDomainVerification && <meta name="facebook-domain-verification" content={SITE.tracking.metaDomainVerification} />}
+    <Tracking />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={SITE.name} />
@@ -67,6 +71,7 @@ const ogImage = new URL(image, Astro.site);
       <slot />
     </main>
     <Footer />
+    <ConsentBanner />
 
     <script>
       // Netlify Forms, submitted in place. Without JS the form posts normally and lands on /thanks/.
@@ -92,6 +97,13 @@ const ogImage = new URL(image, Astro.site);
             done.innerHTML = form.dataset.success ?? 'Thanks.';
             form.parentElement?.querySelector('.micro')?.remove();
             form.replaceWith(done);
+            const events: Record<string, [string, Record<string, string>]> = {
+              notify: ['sign_up', { method: 'email' }],
+              pitch: ['generate_lead', { lead_type: 'guest_pitch' }],
+              contact: ['contact_submit', {}],
+            };
+            const ev = events[form.getAttribute('name') ?? ''];
+            if (ev) (window as unknown as { bwTrack?: (e: string, p: object) => void }).bwTrack?.(ev[0], { ...ev[1], page: location.pathname });
           } catch {
             if (button) { button.disabled = false; button.innerHTML = label; }
             if (error) error.hidden = false;
