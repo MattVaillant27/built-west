@@ -23,7 +23,7 @@ export const SITE = {
   // Analytics/ad IDs. Empty = off. Nothing loads before cookie consent (see src/components/Tracking.astro).
   tracking: {
     ga4: 'G-PPNKCC73CS', // Google Analytics 4 Measurement ID, e.g. G-XXXXXXXXXX
-    metaPixel: '', // Meta (Instagram/Facebook) dataset/pixel ID
+    metaPixel: '1444701464201483', // Meta (Instagram/Facebook) dataset/pixel ID
     metaDomainVerification: '', // content value of Meta's facebook-domain-verification tag
   },
   listen: [
