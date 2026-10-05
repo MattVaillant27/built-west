@@ -24,7 +24,7 @@ export const SITE = {
   tracking: {
     ga4: 'G-PPNKCC73CS', // Google Analytics 4 Measurement ID, e.g. G-XXXXXXXXXX
     metaPixel: '1444701464201483', // Meta (Instagram/Facebook) dataset/pixel ID
-    metaDomainVerification: '', // content value of Meta's facebook-domain-verification tag
+    metaDomainVerification: 'xa11jb4r1l8i2iz4aebj62w87gzobv', // content value of Meta's facebook-domain-verification tag
   },
   listen: [
     { label: 'Apple Podcasts', href: '' },
