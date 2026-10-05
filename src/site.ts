@@ -22,7 +22,7 @@ export const SITE = {
   ],
   // Analytics/ad IDs. Empty = off. Nothing loads before cookie consent (see src/components/Tracking.astro).
   tracking: {
-    ga4: '', // Google Analytics 4 Measurement ID, e.g. G-XXXXXXXXXX
+    ga4: 'G-PPNKCC73CS', // Google Analytics 4 Measurement ID, e.g. G-XXXXXXXXXX
     metaPixel: '', // Meta (Instagram/Facebook) dataset/pixel ID
     metaDomainVerification: '', // content value of Meta's facebook-domain-verification tag
   },
