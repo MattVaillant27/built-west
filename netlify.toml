@@ -22,3 +22,28 @@
     X-Robots-Tag = "noindex, nofollow"
     Cache-Control = "no-store"
     X-Frame-Options = "DENY"
+
+# Short links for social bios: tidy URLs that land with UTM tags for GA4.
+[[redirects]]
+  from = "/x"
+  to = "/?utm_source=x&utm_medium=social&utm_campaign=bio"
+  status = 302
+  force = true
+
+[[redirects]]
+  from = "/ig"
+  to = "/?utm_source=instagram&utm_medium=social&utm_campaign=bio"
+  status = 302
+  force = true
+
+[[redirects]]
+  from = "/yt"
+  to = "/?utm_source=youtube&utm_medium=social&utm_campaign=channel"
+  status = 302
+  force = true
+
+[[redirects]]
+  from = "/in"
+  to = "/?utm_source=linkedin&utm_medium=social&utm_campaign=company_page"
+  status = 302
+  force = true
