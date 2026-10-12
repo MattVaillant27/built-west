@@ -1,0 +1,41 @@
+---
+import PolicyPage from '../components/PolicyPage.astro';
+import { SITE } from '../site';
+const mail = `mailto:${SITE.email}`;
+---
+
+<PolicyPage
+  title="Corrections Policy"
+  heading="Corrections Policy"
+  description="How to report a factual error in a Built West episode, and how we correct it."
+  updated="October 12, 2026"
+>
+  <h2>Spot an Error? Let Us Know</h2>
+  <p>Email <a href={mail}>{SITE.email}</a> with:</p>
+  <ul>
+    <li>Episode title and date</li>
+    <li>Timestamp of the error</li>
+    <li>What was said vs. what’s correct</li>
+    <li>A source if you have one</li>
+  </ul>
+
+  <h2>Our Timeline</h2>
+  <ul>
+    <li><strong>Within 48 hours:</strong> We acknowledge your correction.</li>
+    <li><strong>Within 48–72 hours:</strong> We verify it with the guest or sources.</li>
+    <li><strong>Within 24 hours of verification:</strong> We add a [CORRECTION] note to the show notes on all platforms.</li>
+    <li><strong>Within 7 days:</strong> If it’s a big error, we announce it in the next episode.</li>
+  </ul>
+
+  <h2>What Gets Corrected</h2>
+  <p><strong>Facts:</strong> numbers, dates, quotes, public events.</p>
+  <p><strong>We do NOT correct:</strong> opinions, predictions, disagreements, tone, or requests to remove the episode.</p>
+
+  <h2>How We Correct</h2>
+  <p>We add a note to the show notes like this:</p>
+  <p class="example">[CORRECTION] — At 23:45, the guest said X. The correct information is Y. [Source]. We regret the error.</p>
+  <p>For material corrections, we also say on the next episode: “On last week’s episode, we identified a correction…”</p>
+
+  <h2>Episodes Stay Published</h2>
+  <p>We don’t remove or re-record episodes. Corrections add context but don’t replace the original audio. This applies to all episodes, no matter how old.</p>
+</PolicyPage>

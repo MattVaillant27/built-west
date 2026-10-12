@@ -1,0 +1,46 @@
+---
+// Shared layout for Privacy, Terms and Corrections: title, last-updated date, readable prose.
+import Base from '../layouts/Base.astro';
+
+interface Props {
+  title: string;
+  heading: string;
+  description: string;
+  updated: string;
+  lede?: string;
+}
+const { title, heading, description, updated, lede } = Astro.props;
+---
+
+<Base title={title} description={description}>
+  <section class="page-hero">
+    <div class="wrap">
+      <p class="eyebrow">Legal</p>
+      <h1 class="h1">{heading}</h1>
+      {lede && <p class="lede">{lede}</p>}
+      <p class="updated">Last updated {updated}</p>
+    </div>
+  </section>
+
+  <section class="section section--flush-top">
+    <div class="wrap prose prose--wide policy">
+      <slot />
+    </div>
+  </section>
+</Base>
+
+<style>
+  .page-hero { padding: clamp(64px, 9vw, 120px) 0 clamp(32px, 4vw, 56px); }
+  .page-hero h1 { margin: 20px 0 24px; max-width: 22ch; }
+  .page-hero .lede { max-width: 60ch; margin-bottom: 12px; }
+  .updated { font: 500 14px var(--font-sans); color: var(--coastal); }
+  .policy :global(h2) { font-size: clamp(22px, 2.2vw, 28px); margin: 40px 0 12px; }
+  .policy :global(h2:first-child) { margin-top: 0; }
+  .policy :global(ul), .policy :global(ol) { margin: 0 0 1.1em 1.2em; max-width: 82ch; }
+  .policy :global(li) { margin-bottom: 8px; }
+  .policy :global(.example) { border-left: 3px solid var(--orange); padding: 4px 0 4px 20px; font-style: italic; }
+  .policy :global(.inline-btn) {
+    background: none; border: 0; padding: 0; font: inherit; color: inherit; cursor: pointer;
+    text-decoration: underline; text-decoration-color: var(--orange); text-underline-offset: 4px;
+  }
+</style>

@@ -1,59 +1,71 @@
 ---
-import Base from '../layouts/Base.astro';
+import PolicyPage from '../components/PolicyPage.astro';
 import { SITE } from '../site';
 
-const updated = 'October 5, 2026';
+const mail = `mailto:${SITE.email}`;
 const tracking = !!(SITE.tracking.ga4 || SITE.tracking.metaPixel);
 ---
 
-<Base title="Privacy" description="How Built West handles your information.">
-  <section class="page-hero">
-    <div class="wrap">
-      <p class="eyebrow">Privacy</p>
-      <h1 class="h1">Your information, plainly.</h1>
-      <p class="lede">What we collect on builtwest.ca, why, and the choices you have. Last updated {updated}.</p>
-    </div>
-  </section>
+<PolicyPage
+  title="Privacy Policy"
+  heading="Privacy Policy"
+  description="How Built West collects, uses and protects personal information."
+  updated="October 12, 2026"
+>
+  <h2>Who We Are</h2>
+  <p>Built West is a podcast about the people building technology in British Columbia, produced by {SITE.host.name} in Victoria, BC. {SITE.host.name.split(' ')[0]} is responsible for how Built West handles personal information. Questions go to <a href={mail}>{SITE.email}</a>.</p>
 
-  <section class="section section--flush-top">
-    <div class="wrap prose prose--wide policy">
-      <h2>Who we are</h2>
-      <p>Built West is a podcast about the people building technology in British Columbia, run by {SITE.host.name} in Victoria, BC. Questions about this policy or your information go to <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.</p>
+  <h2>What We Collect</h2>
+  <ul>
+    <li><strong>Email updates:</strong> your email address.</li>
+    <li><strong>Pitch a guest:</strong> your name, email, and what you tell us about the person you’re suggesting (their name, role, company, a link, and why they’d be a good guest).</li>
+    <li><strong>Contact form and emails:</strong> your name, email and message.</li>
+    <li><strong>Website use, only if you accept cookies:</strong> pages you visit, how you arrived (for example from Instagram or a search engine), device and browser type, approximate location (city or region), and actions such as signing up.</li>
+  </ul>
+  <p>We don’t collect payment information, and we don’t ask for sensitive information.</p>
 
-      <h2>What you give us</h2>
-      <p><strong>Updates sign-up.</strong> Your email address, used only to send Built West updates. You can unsubscribe at any time.</p>
-      <p><strong>Pitch a guest.</strong> Your name and email, and the details you share about the person you’re suggesting. We use this to consider guests and may follow up with you. Pitches are kept in our private guest-planning tools.</p>
-      <p><strong>Contact.</strong> Your name, email and message, used to reply to you.</p>
-      <p>Form submissions are received and stored by our website host, Netlify.</p>
+  <h2>How We Use It</h2>
+  <ul>
+    <li>To send the updates you asked for. You can unsubscribe at any time.</li>
+    <li>To consider guest suggestions and follow up with you.</li>
+    <li>To reply to your messages.</li>
+    <li>To understand how people find and use the site, and whether our ads work.</li>
+  </ul>
+  <p>We don’t sell personal information, and we don’t use it for anything you wouldn’t reasonably expect.</p>
 
-      <h2>Cookies, analytics and ads</h2>
-      <p>With your permission, we use:</p>
-      <ul>
-        <li><strong>Google Analytics</strong> to understand how people find and use the site (pages viewed, how you arrived, sign-ups), in aggregate.</li>
-        <li><strong>Meta Pixel</strong> (Instagram and Facebook) to measure whether our ads lead to sign-ups and to show our ads to people who’ve visited the site.</li>
-      </ul>
-      <p>These only set cookies after you click <em>Accept</em>. If you decline, no analytics or advertising cookies are set; Google may still receive basic, cookieless signals (for example, that a page was viewed) that are used only in aggregate.</p>
-      {tracking && <p>You can change your choice at any time: <button type="button" class="inline-btn" data-open-consent>open cookie settings</button>.</p>}
+  <h2>Cookies and Your Choices</h2>
+  <p>We use Google Analytics and the Meta Pixel (Instagram and Facebook) only after you click <strong>Accept</strong> on our cookie banner. If you decline, no analytics or advertising cookies are set; Google may still receive basic, cookieless signals (for example, that a page was viewed), used only in aggregate.</p>
+  {tracking && <p>You can change your choice any time: <button type="button" class="inline-btn" data-open-consent>open cookie settings</button>.</p>}
 
-      <h2>Who else handles it</h2>
-      <p>We don’t sell your information. We share it only with the services that run the site and the show: Netlify (hosting and forms), Google (analytics), Meta (ad measurement) and ImprovMX (email forwarding). Some of these providers store data outside Canada, including in the United States.</p>
+  <h2>People We May Invite on the Show</h2>
+  <p>To plan the show, we keep notes on potential guests: name, role, company, and publicly available professional information such as company websites, news coverage and public profiles. We use business contact details only to contact people about appearing on Built West. If you’d like to see or remove what we hold about you, email us.</p>
 
-      <h2>How long we keep it</h2>
-      <p>We keep sign-ups until you unsubscribe, and pitches and messages for as long as they’re useful for planning the show. Ask and we’ll delete yours sooner.</p>
+  <h2>Guests</h2>
+  <p>If you appear on Built West, we’ll explain how your interview and related information will be used before we record.</p>
 
-      <h2>Your choices</h2>
-      <p>You can ask to see, correct or delete the information we hold about you, or withdraw your consent, by emailing <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.</p>
-    </div>
-  </section>
-</Base>
+  <h2>Service Providers</h2>
+  <p>We rely on a few trusted services: Netlify (website hosting, forms and our private planning tools), Google (analytics), Meta (ad measurement) and ImprovMX (email forwarding). Some of these store or process information outside Canada, mainly in the United States, where it may be subject to local laws.</p>
 
-<style>
-  .page-hero { padding: clamp(64px, 9vw, 120px) 0 clamp(32px, 4vw, 56px); }
-  .page-hero h1 { margin: 20px 0 24px; max-width: 22ch; }
-  .page-hero .lede { max-width: 60ch; }
-  .policy h2 { font-size: clamp(22px, 2.2vw, 28px); margin: 40px 0 12px; }
-  .policy h2:first-child { margin-top: 0; }
-  .policy ul { margin: 0 0 1.1em 1.2em; max-width: 82ch; }
-  .policy li { margin-bottom: 8px; }
-  .inline-btn { background: none; border: 0; padding: 0; font: inherit; color: inherit; text-decoration: underline; text-decoration-color: var(--orange); text-underline-offset: 4px; cursor: pointer; }
-</style>
+  <h2>How Long We Keep It</h2>
+  <ul>
+    <li><strong>Email updates:</strong> until you unsubscribe.</li>
+    <li><strong>Pitches and messages:</strong> up to two years, unless we’re still in touch.</li>
+    <li><strong>Website analytics:</strong> up to 14 months.</li>
+    <li><strong>Notes on potential guests:</strong> while they’re relevant to planning the show.</li>
+  </ul>
+
+  <h2>How We Protect It</h2>
+  <p>Access is limited to Built West. Our planning tools require a password and two-factor authentication, and all connections to the site are encrypted.</p>
+
+  <h2>Your Rights</h2>
+  <p>You can ask to see, correct or delete your personal information, or withdraw your consent, by emailing <a href={mail}>{SITE.email}</a>. We’ll respond within 30 days. If you’re not satisfied with our response, you can contact the <a href="https://www.oipc.bc.ca/" rel="noopener">Office of the Information and Privacy Commissioner for British Columbia</a>.</p>
+
+  <h2>Children</h2>
+  <p>Built West isn’t directed at children under 16, and we don’t knowingly collect their information.</p>
+
+  <h2>Changes</h2>
+  <p>If we update this policy, we’ll change the date at the top of this page.</p>
+
+  <h2>Questions</h2>
+  <p>Contact <a href={mail}>{SITE.email}</a>.</p>
+</PolicyPage>

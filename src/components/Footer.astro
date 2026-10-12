@@ -38,6 +38,8 @@ const year = new Date().getFullYear();
       <span>© {year} {SITE.name}</span>
       <span class="legal">
         <a href="/privacy/">Privacy</a>
+        <a href="/terms/">Terms</a>
+        <a href="/corrections/">Corrections</a>
         {(SITE.tracking.ga4 || SITE.tracking.metaPixel) && <button type="button" class="linkish" data-open-consent>Cookie settings</button>}
       </span>
     </div>
@@ -54,7 +56,7 @@ const year = new Date().getFullYear();
   nav li { margin-bottom: 10px; }
   a { text-decoration: none; }
   a:hover { text-decoration: underline; text-decoration-color: var(--orange); text-underline-offset: 4px; }
-  .legal { display: flex; gap: 20px; }
+  .legal { display: flex; flex-wrap: wrap; gap: 8px 20px; }
   .linkish { background: none; border: 0; padding: 0; color: inherit; font: inherit; cursor: pointer; }
   .linkish:hover { text-decoration: underline; text-decoration-color: var(--orange); text-underline-offset: 4px; }
   .bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 32px; padding-top: 24px; color: var(--white-70); }

@@ -105,6 +105,8 @@ const jsonLd = {
           </>
         )}
 
+        <p class="corrections-note">Spot a factual error? See our <a href="/corrections/">corrections policy</a>.</p>
+
         {hasTranscript && (
           <details class="transcript">
             <summary>Full transcript</summary>
@@ -200,6 +202,7 @@ const jsonLd = {
   .chapters b { font: 600 14px var(--font-sans); color: var(--coastal); }
   .pull { border-left: 3px solid var(--orange); padding: 4px 0 4px 28px; margin: 48px 0; font: italic 600 clamp(24px, 2.6vw, 34px)/1.25 var(--font-display); }
   .mentioned { padding-left: 1.2em; }
+  .corrections-note { margin-top: 40px; font-size: 14px; color: var(--coastal); }
   .transcript { border-top: 1px solid var(--navy-15); border-bottom: 1px solid var(--navy-15); padding: 20px 0; margin-top: 56px; }
   .transcript summary { font: 600 13px var(--font-sans); letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; }
   .transcript-body { padding-top: 20px; }
