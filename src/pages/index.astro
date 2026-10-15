@@ -1,5 +1,5 @@
 ---
-import { Picture } from 'astro:assets';
+import { Picture, getImage } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import SignupForm from '../components/SignupForm.astro';
 import PitchBand from '../components/PitchBand.astro';
@@ -10,6 +10,8 @@ import { SITE } from '../site';
 import { getEpisodes, pad } from '../lib/episodes';
 
 const [latest] = await getEpisodes();
+// Preload the hero (the page's largest element) so phones paint it sooner.
+const heroPreload = await getImage({ src: hero, format: 'avif', widths: [640, 960, 1235], quality: 82 });
 const live = SITE.launched && latest;
 
 const intro = [
@@ -20,11 +22,12 @@ const intro = [
 ---
 
 <Base>
+  <link slot="head" rel="preload" as="image" type="image/avif" imagesrcset={heroPreload.srcSet.attribute} imagesizes="100vw" fetchpriority="high" />
   <section class="hero navy">
     <Picture
       class="hero-img"
       src={hero}
-      alt=""
+      alt="Sunset over the islands and coast mountains of British Columbia"
       formats={['avif', 'webp']}
       widths={[640, 960, 1235]}
       sizes="100vw"

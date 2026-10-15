@@ -3,6 +3,9 @@ export const SITE = {
   name: 'Built West',
   tagline: 'A BC Tech Podcast',
   description: 'Long-form conversations with the people building BC tech.',
+  // Default meta description for search results (~150 characters).
+  seoDescription:
+    'Built West is a long-form interview podcast with the founders, operators and investors building tech in British Columbia, from Vancouver to Victoria and beyond.',
   url: 'https://builtwest.ca',
   email: 'hello@builtwest.ca', // TODO: confirm
   host: { name: 'Matt Vaillant', role: 'Host' },

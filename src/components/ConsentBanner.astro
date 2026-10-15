@@ -5,7 +5,7 @@ const enabled = !!(SITE.tracking.ga4 || SITE.tracking.metaPixel);
 ---
 
 {enabled && (
-  <div class="consent" id="consent" role="region" aria-label="Cookie choices" hidden>
+  <div class="consent" id="consent" role="region" aria-label="Cookie choices">
     <div class="wrap inner">
       <p>
         We use cookies to understand how people find Built West and to measure our ads. <a class="link" href="/privacy/">Privacy</a>
@@ -23,7 +23,7 @@ const enabled = !!(SITE.tracking.ga4 || SITE.tracking.metaPixel);
   if (bar) {
     let choice: string | null = null;
     try { choice = localStorage.getItem('bw-consent'); } catch {}
-    if (!choice) bar.hidden = false;
+    if (choice) bar.hidden = true;
     bar.querySelectorAll<HTMLButtonElement>('[data-consent]').forEach((b) =>
       b.addEventListener('click', () => {
         (window as unknown as { bwConsent?: (c: string) => void }).bwConsent?.(b.dataset.consent!);
@@ -33,6 +33,7 @@ const enabled = !!(SITE.tracking.ga4 || SITE.tracking.metaPixel);
     document.addEventListener('click', (e) => {
       if ((e.target as HTMLElement).closest('[data-open-consent]')) {
         bar.hidden = false;
+        bar.classList.add('open');
         bar.querySelector<HTMLButtonElement>('[data-consent="granted"]')?.focus();
       }
     });
@@ -40,6 +41,8 @@ const enabled = !!(SITE.tracking.ga4 || SITE.tracking.metaPixel);
 </script>
 
 <style>
+  /* Visible from first paint; hidden immediately for visitors who already chose (class set in Tracking.astro). */
+  :global(html.bw-chose) .consent:not(.open) { display: none; }
   .consent {
     position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 60;
     background: var(--cream); border: 1px solid var(--navy-15); border-radius: 4px;

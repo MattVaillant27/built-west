@@ -11,6 +11,9 @@ import Footer from '../components/Footer.astro';
 import Tracking from '../components/Tracking.astro';
 import ConsentBanner from '../components/ConsentBanner.astro';
 import { SITE } from '../site';
+import montserrat400 from '@fontsource/montserrat/files/montserrat-latin-400-normal.woff2?url';
+import montserrat600 from '@fontsource/montserrat/files/montserrat-latin-600-normal.woff2?url';
+import serifDisplay from '@fontsource-variable/source-serif-4/files/source-serif-4-latin-opsz-normal.woff2?url';
 
 interface Props {
   title?: string;
@@ -19,7 +22,7 @@ interface Props {
   noindex?: boolean;
 }
 
-const { title, description = SITE.description, image = '/og-default.jpg', noindex = false } = Astro.props;
+const { title, description = SITE.seoDescription, image = '/og-default.jpg', noindex = false } = Astro.props;
 const fullTitle = title ? `${title} · ${SITE.name}` : `${SITE.name} — ${SITE.tagline}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const ogImage = new URL(image, Astro.site);
@@ -39,6 +42,11 @@ const ogImage = new URL(image, Astro.site);
     <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="theme-color" content="#0B1F2D" />
+    <link rel="preload" href={serifDisplay} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={montserrat400} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={montserrat600} as="font" type="font/woff2" crossorigin />
+    {SITE.tracking.ga4 && <link rel="preconnect" href="https://www.googletagmanager.com" />}
+    {SITE.tracking.ga4 && <link rel="preconnect" href="https://www.google-analytics.com" />}
     {SITE.tracking.metaDomainVerification && <meta name="facebook-domain-verification" content={SITE.tracking.metaDomainVerification} />}
     <Tracking />
 
@@ -55,11 +63,44 @@ const ogImage = new URL(image, Astro.site);
       type="application/ld+json"
       set:html={JSON.stringify({
         '@context': 'https://schema.org',
-        '@type': 'Organization',
-        name: SITE.name,
-        url: SITE.url,
-        logo: new URL('/icon-512.png', Astro.site).toString(),
-        sameAs: SITE.social.filter((s) => s.href).map((s) => s.href),
+        '@graph': [
+          {
+            '@type': 'Organization',
+            '@id': `${SITE.url}/#organization`,
+            name: SITE.name,
+            url: SITE.url,
+            logo: new URL('/icon-512.png', Astro.site).toString(),
+            email: SITE.email,
+            sameAs: SITE.social.filter((s) => s.href).map((s) => s.href),
+          },
+          {
+            '@type': 'WebSite',
+            '@id': `${SITE.url}/#website`,
+            name: SITE.name,
+            url: SITE.url,
+            inLanguage: 'en-CA',
+            publisher: { '@id': `${SITE.url}/#organization` },
+          },
+          {
+            '@type': 'PodcastSeries',
+            '@id': `${SITE.url}/#podcast`,
+            name: SITE.name,
+            url: SITE.url,
+            description: SITE.seoDescription,
+            inLanguage: 'en-CA',
+            image: new URL('/og-default.jpg', Astro.site).toString(),
+            author: { '@id': `${SITE.url}/#host` },
+            publisher: { '@id': `${SITE.url}/#organization` },
+          },
+          {
+            '@type': 'Person',
+            '@id': `${SITE.url}/#host`,
+            name: SITE.host.name,
+            jobTitle: 'Host, Built West',
+            url: `${SITE.url}/about/`,
+            homeLocation: { '@type': 'Place', name: 'Victoria, British Columbia' },
+          },
+        ],
       })}
     />
     <slot name="head" />

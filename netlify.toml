@@ -47,3 +47,10 @@
   to = "/?utm_source=linkedin&utm_medium=social&utm_campaign=company_page"
   status = 302
   force = true
+
+# One public address: send the Netlify subdomain to builtwest.ca (deploy previews use other hosts and are unaffected).
+[[redirects]]
+  from = "https://builtwest.netlify.app/*"
+  to = "https://builtwest.ca/:splat"
+  status = 301
+  force = true

@@ -15,6 +15,7 @@ const { ga4, metaPixel } = SITE.tracking;
   var stored = null;
   try { stored = localStorage.getItem('bw-consent'); } catch (e) {}
   var granted = stored === 'granted';
+  if (stored) document.documentElement.classList.add('bw-chose');
   gtag('consent', 'default', {
     analytics_storage: granted ? 'granted' : 'denied',
     ad_storage: granted ? 'granted' : 'denied',

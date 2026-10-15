@@ -83,9 +83,17 @@ Layouts are mostly cream and navy, forest for depth, orange as a single highligh
   2. Check for duplicates: `GET /crm/api/records?q=<surname>`.
   3. Show Matt a short summary per person (role, company, region, lane, profile, suggested angle, links, stage, follow-up) and **wait for his OK**.
   4. `POST /crm/api/records` with `{ "records": [{ kind, name, stage, fields: {role, company, region, lane, profile, website, angle, source: "Research", confidence}, note, followUp }] }`. Existing names get the note appended and empty fields filled (nothing is overwritten).
+  - Always call the API on `https://builtwest.ca` (builtwest.netlify.app 301-redirects there, which breaks POSTs).
   - Auth: `Authorization: Bearer $CRM_API_TOKEN`; token + base URL live in `~/.config/builtwest/crm.env` (outside the repo, chmod 600). Netlify env var `CRM_API_TOKEN` must match.
   - Notes: include source links and "confidence: from research, verify". Dates in notes are absolute.
 - Local testing needs the env vars exported in the shell running `astro dev`; Blobs are emulated in `.netlify/` (gitignored).
+
+## SEO
+
+- Default meta description: `SITE.seoDescription` (`src/site.ts`); pages pass their own `description` to `Base`.
+- Structured data (`Base.astro`): one `@graph` with Organization, WebSite, PodcastSeries and Person (host). Episode pages add `PodcastEpisode`.
+- Performance: fonts (serif display, Montserrat 400/600) are preloaded in `Base.astro`; the home hero is preloaded with `getImage()` using the same widths/quality as its `<Picture>` (keep them in sync to avoid a double download).
+- builtwest.netlify.app 301-redirects to builtwest.ca (`netlify.toml`).
 
 ## Conventions
 
