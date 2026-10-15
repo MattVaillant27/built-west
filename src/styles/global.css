@@ -18,8 +18,8 @@
   --navy-08: rgba(11, 31, 45, 0.08);
 
   /* Swap to "Tiempos Headline" here if a web licence is bought. */
-  --font-display: 'Source Serif 4 Variable', Georgia, 'Times New Roman', serif;
-  --font-sans: 'Montserrat', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: var(--font-serif); /* defined by Astro's font API (astro.config.mjs) */
+  --font-sans: var(--font-montserrat);
 
   --max: 1200px;
   --pad: 20px;

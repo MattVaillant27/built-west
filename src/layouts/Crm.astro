@@ -1,9 +1,5 @@
 ---
-import '@fontsource/montserrat/400.css';
-import '@fontsource/montserrat/500.css';
-import '@fontsource/montserrat/600.css';
-import '@fontsource/montserrat/700.css';
-import '@fontsource-variable/source-serif-4/opsz.css';
+import { Font } from 'astro:assets';
 import '../styles/global.css';
 
 interface Props {
@@ -32,6 +28,8 @@ const active = (href: string) => (href === '/crm' ? path === '/crm' : path.start
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="theme-color" content="#0B1F2D" />
+    <Font cssVariable="--font-serif" />
+    <Font cssVariable="--font-montserrat" />
   </head>
   <body class="crm">
     <header class="crm-bar navy">

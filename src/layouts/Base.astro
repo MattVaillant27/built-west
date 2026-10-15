@@ -1,19 +1,11 @@
 ---
-import '@fontsource/montserrat/400.css';
-import '@fontsource/montserrat/500.css';
-import '@fontsource/montserrat/600.css';
-import '@fontsource/montserrat/700.css';
-import '@fontsource-variable/source-serif-4/opsz.css';
-import '@fontsource-variable/source-serif-4/opsz-italic.css';
+import { Font } from 'astro:assets';
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Tracking from '../components/Tracking.astro';
 import ConsentBanner from '../components/ConsentBanner.astro';
 import { SITE } from '../site';
-import montserrat400 from '@fontsource/montserrat/files/montserrat-latin-400-normal.woff2?url';
-import montserrat600 from '@fontsource/montserrat/files/montserrat-latin-600-normal.woff2?url';
-import serifDisplay from '@fontsource-variable/source-serif-4/files/source-serif-4-latin-opsz-normal.woff2?url';
 
 interface Props {
   title?: string;
@@ -42,9 +34,8 @@ const ogImage = new URL(image, Astro.site);
     <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="theme-color" content="#0B1F2D" />
-    <link rel="preload" href={serifDisplay} as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href={montserrat400} as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href={montserrat600} as="font" type="font/woff2" crossorigin />
+    <Font cssVariable="--font-serif" />
+    <Font cssVariable="--font-montserrat" />
     {SITE.tracking.ga4 && <link rel="preconnect" href="https://www.googletagmanager.com" />}
     {SITE.tracking.ga4 && <link rel="preconnect" href="https://www.google-analytics.com" />}
     {SITE.tracking.metaDomainVerification && <meta name="facebook-domain-verification" content={SITE.tracking.metaDomainVerification} />}

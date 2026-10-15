@@ -30,7 +30,7 @@ Website for **Built West, a BC tech podcast**: long-form video interviews with t
 Layouts are mostly cream and navy, forest for depth, orange as a single highlight.
 
 **Type**
-- Display: **Tiempos Headline** (Semibold/Bold) for headlines, episode titles, pull quotes. Needs a Klim *web* licence. Until then use **Source Serif 4** (display optical size, weights 600/700) — the closest free match to Tiempos Headline. Set it through a single `--font-display` CSS variable so Tiempos can be swapped in one place later.
+- Display: **Tiempos Headline** (Semibold/Bold) for headlines, episode titles, pull quotes. Needs a Klim *web* licence. Until then use **Source Serif 4** (display optical size, weights 600/700) — the closest free match to Tiempos Headline. Set it through a single `--font-display` CSS variable so Tiempos can be swapped in one place later (add Tiempos as another family in `astro.config.mjs` `fonts`).
 - Body/UI: **Montserrat** (400–700) for body, nav, labels, guest names. Small labels and eyebrows: uppercase, wide letter-spacing (~0.2em).
 - Signature pattern: eyebrow label ("EPISODE 01") → serif title → short orange rule → "Guest name · Role, Company".
 
@@ -92,7 +92,8 @@ Layouts are mostly cream and navy, forest for depth, orange as a single highligh
 
 - Default meta description: `SITE.seoDescription` (`src/site.ts`); pages pass their own `description` to `Base`.
 - Structured data (`Base.astro`): one `@graph` with Organization, WebSite, PodcastSeries and Person (host). Episode pages add `PodcastEpisode`.
-- Performance: fonts (serif display, Montserrat 400/600) are preloaded in `Base.astro`; the home hero is preloaded with `getImage()` using the same widths/quality as its `<Picture>` (keep them in sync to avoid a double download).
+- Fonts: self-hosted via Astro's font API (`fonts` in `astro.config.mjs`, files in `src/assets/fonts/`, `<Font>` in both layouts). It generates metric-matched fallbacks, so fonts are NOT preloaded and nothing shifts on load. CSS uses `--font-display` → `--font-serif` and `--font-sans` → `--font-montserrat`.
+- Performance: the home hero is preloaded with `getImage()` using the same widths/quality as its `<Picture>` (keep them in sync to avoid a double download).
 - builtwest.netlify.app 301-redirects to builtwest.ca (`netlify.toml`).
 
 ## Conventions
