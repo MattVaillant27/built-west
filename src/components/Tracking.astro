@@ -25,12 +25,18 @@ const { ga4, metaPixel } = SITE.tracking;
   });
 
   if (ga4) {
-    var s = document.createElement('script');
-    s.async = true;
-    s.src = 'https://www.googletagmanager.com/gtag/js?id=' + ga4;
-    document.head.appendChild(s);
     gtag('js', new Date());
     gtag('config', ga4);
+    // Load gtag.js after the page has painted so it doesn't compete with the hero.
+    // Calls made before then wait in dataLayer and are sent once it loads.
+    var loadGa = function () {
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + ga4;
+      document.head.appendChild(s);
+    };
+    if (document.readyState === 'complete') setTimeout(loadGa, 0);
+    else window.addEventListener('load', function () { setTimeout(loadGa, 0); });
   }
 
   function loadMeta() {
