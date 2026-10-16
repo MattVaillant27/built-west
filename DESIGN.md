@@ -92,7 +92,9 @@ Clickable wireframes of every page: `design/wireframes.html` (rebuild with `pyth
 
 ### Home — coming soon (launch)
 
-**Current section order:** hero → What it is / Who it’s for / What to expect → host strip → episode preview card (“Episode 01 · Recording now”; becomes the latest episode once `launched` is true) → pitch band → footer. The navy format band was removed. (The diagram below predates this swap.)
+**Current section order (coming soon):** hero → What it is / Who it’s for / What to expect → host strip → “Episode 01 · Recording now” card → pitch band → footer.
+
+**After launch (`launched: true` in `src/site.ts`):** hero (“New episode out now”, Listen button) → latest-episode card → Recent episodes (next 3, “All episodes →”) → What it is / Who it’s for / What to expect → host strip → pitch band → footer.
 
 ```
 ┌──────────────────────────────────────────────────────────────┐

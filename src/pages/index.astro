@@ -4,12 +4,13 @@ import Base from '../layouts/Base.astro';
 import SignupForm from '../components/SignupForm.astro';
 import PitchBand from '../components/PitchBand.astro';
 import Portrait from '../components/Portrait.astro';
+import EpisodeCard from '../components/EpisodeCard.astro';
 import hero from '../assets/hero-coast.jpg';
 import hostPhoto from '../assets/host.webp';
 import { SITE } from '../site';
 import { getEpisodes, pad } from '../lib/episodes';
 
-const [latest] = await getEpisodes();
+const [latest, ...older] = await getEpisodes();
 // Preload the hero (the page's largest element) so phones paint it sooner.
 const heroPreload = await getImage({ src: hero, format: 'avif', widths: [640, 960, 1235], quality: 82 });
 const live = SITE.launched && latest;
@@ -47,7 +48,38 @@ const intro = [
     </div>
   </section>
 
-  <section class="section">
+  {live && (
+    <>
+      <!-- After launch: newest episode first, then the back catalogue. -->
+      <section class="section">
+        <div class="wrap">
+          <a class="teaser card" href={`/episodes/${latest.id}/`}>
+            <Portrait src={latest.data.guest.photo} alt={latest.data.guest.name} />
+            <div>
+              <p class="eyebrow eyebrow--muted">Latest · Episode {pad(latest.data.number)} · {latest.data.duration}</p>
+              <h2 class="h2">{latest.data.title}</h2>
+              <hr class="rule" />
+              <p class="meta">{latest.data.guest.name} · {latest.data.guest.role}, {latest.data.guest.company}</p>
+              <span class="btn">Play episode <span class="arrow" aria-hidden="true"></span></span>
+            </div>
+          </a>
+        </div>
+      </section>
+      {older.length > 0 && (
+        <section class="section section--flush-top">
+          <div class="wrap">
+            <div class="recent-head">
+              <h2 class="eyebrow divider-label">Recent episodes</h2>
+              <a class="link" href="/episodes/">All episodes →</a>
+            </div>
+            <div class="recent">{older.slice(0, 3).map((ep) => <EpisodeCard episode={ep} />)}</div>
+          </div>
+        </section>
+      )}
+    </>
+  )}
+
+  <section class:list={['section', { 'section--flush-top': live }]}>
     <div class="wrap intro">
       {intro.map((c) => (
         <div>
@@ -72,20 +104,9 @@ const intro = [
     </div>
   </section>
 
-  <section class="section section--flush-top">
-    <div class="wrap">
-      {live ? (
-        <a class="teaser card" href={`/episodes/${latest.id}/`}>
-          <Portrait src={latest.data.guest.photo} alt={latest.data.guest.name} />
-          <div>
-            <p class="eyebrow eyebrow--muted">Latest · Episode {pad(latest.data.number)} · {latest.data.duration}</p>
-            <h2 class="h2">{latest.data.title}</h2>
-            <hr class="rule" />
-            <p class="meta">{latest.data.guest.name} · {latest.data.guest.role}, {latest.data.guest.company}</p>
-            <span class="btn">Play episode <span class="arrow" aria-hidden="true"></span></span>
-          </div>
-        </a>
-      ) : (
+  {!live && (
+    <section class="section section--flush-top">
+      <div class="wrap">
         <div class="teaser card">
           <Portrait alt="Guest to be announced" label="Guest to be announced" />
           <div>
@@ -96,9 +117,9 @@ const intro = [
             <a class="btn" href="#signup">Get notified <span class="arrow" aria-hidden="true"></span></a>
           </div>
         </div>
-      )}
-    </div>
-  </section>
+      </div>
+    </section>
+  )}
 
   <PitchBand />
 </Base>
@@ -126,6 +147,10 @@ const intro = [
   .teaser .rule { margin-bottom: 18px; }
   .teaser .meta { margin-bottom: 28px; }
 
+  .recent-head { display: flex; align-items: center; gap: 24px; margin-bottom: 28px; }
+  .recent-head h2 { flex: 1; }
+  .recent { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+
   .host { display: grid; grid-template-columns: 200px 1fr; gap: 48px; align-items: center; padding-top: 40px; padding-bottom: 40px; border-top: 1px solid var(--navy-15); border-bottom: 1px solid var(--navy-15); }
   .host h2 { margin: 14px 0 12px; }
   .host-bio { font-size: clamp(17px, 1.4vw, 19px); max-width: 62ch; margin-bottom: 18px; }
@@ -135,6 +160,7 @@ const intro = [
     .intro { grid-template-columns: 1fr; }
     .teaser { grid-template-columns: 1fr; padding: 24px; gap: 28px; }
     .teaser :global(.portrait) { max-width: 320px; }
+    .recent { grid-template-columns: 1fr 1fr; gap: 24px; }
     .host { grid-template-columns: 1fr; gap: 24px; }
     .host :global(.portrait) { max-width: 160px; }
   }
