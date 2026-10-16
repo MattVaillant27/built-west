@@ -1,6 +1,7 @@
 // Site-wide settings. Update these as details are confirmed.
 export const SITE = {
   name: 'Built West',
+  legalName: 'Built West Media Inc.',
   tagline: 'A BC Tech Podcast',
   description: 'Long-form conversations with the people building BC tech.',
   // Default meta description for search results (~150 characters).

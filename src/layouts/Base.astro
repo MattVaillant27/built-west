@@ -59,6 +59,7 @@ const ogImage = new URL(image, Astro.site);
             '@type': 'Organization',
             '@id': `${SITE.url}/#organization`,
             name: SITE.name,
+            legalName: SITE.legalName,
             url: SITE.url,
             logo: new URL('/icon-512.png', Astro.site).toString(),
             email: SITE.email,
