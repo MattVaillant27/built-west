@@ -1,6 +1,5 @@
 ---
 import { render } from 'astro:content';
-import { getImage } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import Portrait from '../../components/Portrait.astro';
 import EpisodeCard from '../../components/EpisodeCard.astro';
@@ -34,8 +33,8 @@ const listenLinks = [
 ].filter((l) => l.href);
 
 const pageUrl = new URL(Astro.url.pathname, Astro.site).toString();
-// Falls back to the site-wide banner when an episode has no share image yet.
-const share = shareImage && (await getImage({ src: shareImage, width: 1200, height: 630, fit: 'cover', format: 'jpg', quality: 85 }));
+// Built by ./[slug]/share.jpg.ts. Falls back to the site-wide banner when an episode has no share image yet.
+const share = shareImage && `/episodes/${episode.id}/share.jpg`;
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'PodcastEpisode',
@@ -45,11 +44,11 @@ const jsonLd = {
   datePublished: date.toISOString().slice(0, 10),
   description: summary,
   partOfSeries: { '@type': 'PodcastSeries', name: SITE.name, url: SITE.url },
-  ...(share && { image: new URL(share.src, Astro.site).toString() }),
+  ...(share && { image: new URL(share, Astro.site).toString() }),
 };
 ---
 
-<Base title={`${title} — ${guest.name}`} description={summary} image={share ? share.src : undefined}>
+<Base title={`${title} — ${guest.name}`} description={summary} image={share || undefined}>
   <script slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
   <section class="ep-hero navy tex">
