@@ -1,12 +1,13 @@
 ---
-// Email signup, handled by Netlify Forms ("notify"). Place inside a .navy/.forest section for the dark variant.
+// Email signup, handled by Netlify Forms ("notify"); netlify/functions/submission-created.mjs passes it to Kit. Place inside a .navy/.forest section for the dark variant.
 interface Props {
   id: string;
   button?: string;
   dark?: boolean;
-  note?: boolean;
 }
-const { id, button = 'Get notified', dark = false, note = true } = Astro.props;
+import { SITE } from '../site';
+
+const { id, button = 'Get notified', dark = false } = Astro.props;
 ---
 
 <div class:list={['signup', { dark }]}>
@@ -18,7 +19,7 @@ const { id, button = 'Get notified', dark = false, note = true } = Astro.props;
     data-netlify="true"
     netlify-honeypot="bot-field"
     data-ajax
-    data-success="<strong>You’re on the list.</strong> We’ll keep you posted."
+    data-success="<strong>Almost there.</strong> Check your inbox to confirm your email."
   >
     <input type="hidden" name="form-name" value="notify" />
     <p class="hp" aria-hidden="true"><label>Leave this empty <input name="bot-field" tabindex="-1" autocomplete="off" /></label></p>
@@ -29,9 +30,9 @@ const { id, button = 'Get notified', dark = false, note = true } = Astro.props;
         {button} <span class="arrow" aria-hidden="true"></span>
       </button>
     </div>
+    <p class="consent">Occasional emails from {SITE.legalName} Unsubscribe anytime. <a href="/privacy/">Privacy</a></p>
     <p class="form-error" role="alert" hidden>That didn’t go through. Check your email address and try again.</p>
   </form>
-  {note && <p class="micro">Sign up for updates.</p>}
 </div>
 
 <style>
@@ -45,6 +46,9 @@ const { id, button = 'Get notified', dark = false, note = true } = Astro.props;
   input[type='email']::placeholder { color: var(--coastal); }
   .dark input[type='email'] { border-bottom-color: var(--white); }
   .dark input[type='email']::placeholder { color: rgba(255, 255, 255, 0.55); }
+  .consent { font-size: 13px; color: var(--coastal); margin-top: 12px; }
+  .consent a { text-underline-offset: 3px; }
+  .dark .consent { color: var(--white-70); }
   .signup :global(.form-success) { margin-top: 8px; }
   @media (max-width: 639px) {
     .row { flex-direction: column; }
