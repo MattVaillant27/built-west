@@ -14,6 +14,7 @@ guest:
   # photo: ./images/guest-name.jpg
   links:
     - { label: "LinkedIn", url: "https://www.linkedin.com/" }
+# shareImage: ./images/01-share.jpg   # your templated share image (any size; exported as 1200×630)
 # riversideEmbed: "https://riverside.fm/embed/..."
 listen: {}
 chapters:

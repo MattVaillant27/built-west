@@ -58,7 +58,7 @@ Layouts are mostly cream and navy, forest for depth, orange as a single highligh
 - `src/styles/global.css` — design tokens and shared classes (`.eyebrow`, `.statement`, `.btn`, `.tex`, `.card`, `.field`…). Page-specific styles live in each `.astro` file.
 - `src/layouts/Base.astro` — head/SEO, header, footer, and the Netlify Forms AJAX handler for any `form[data-ajax]`.
 - `src/components/` — Header, Footer, SignupForm, PitchBand, Portrait, EpisodeRow, EpisodeCard.
-- `src/content/episodes/*.md` — one file per episode; schema in `src/content.config.ts`. Copy `_sample-episode.md` (files starting `_` are ignored). `draft: true` hides an episode.
+- `src/content/episodes/*.md` — one file per episode; schema in `src/content.config.ts`. Copy `_sample-episode.md` (files starting `_` are ignored). `draft: true` hides an episode. `shareImage` (Matt's templated episode share image, stored next to the episode) becomes that page's Open Graph/X image, cropped to 1200×630 JPG; without it the page uses `og-default.jpg`.
 - Forms (Netlify): `notify` (email), `pitch`, `contact`, `sponsor` (on `/sponsors`). They only submit on Netlify; locally they show the error state.
 - Email list: **Kit** (form ID `10067197`, double opt-in). `netlify/functions/submission-created.mjs` passes verified `notify` submissions to Kit's public form endpoint (no API key; the browser never calls Kit). Netlify keeps a copy. The consent line under every sign-up box (CASL) lives in `SignupForm.astro`.
 - `design/` — wireframes and source assets (not deployed). `public/` — favicons, OG image, `topo.svg` texture.

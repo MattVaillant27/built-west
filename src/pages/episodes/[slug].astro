@@ -1,5 +1,6 @@
 ---
 import { render } from 'astro:content';
+import { getImage } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import Portrait from '../../components/Portrait.astro';
 import EpisodeCard from '../../components/EpisodeCard.astro';
@@ -22,7 +23,7 @@ export async function getStaticPaths() {
 
 interface Props { episode: Episode; newer?: Episode; older?: Episode; more: Episode[] }
 const { episode, newer, older, more } = Astro.props;
-const { number, title, date, duration, summary, guest, riversideEmbed, listen, chapters, quote, mentioned } = episode.data;
+const { number, title, date, duration, summary, guest, shareImage, riversideEmbed, listen, chapters, quote, mentioned } = episode.data;
 const { Content } = await render(episode);
 const hasTranscript = Boolean(episode.body?.trim());
 
@@ -33,6 +34,8 @@ const listenLinks = [
 ].filter((l) => l.href);
 
 const pageUrl = new URL(Astro.url.pathname, Astro.site).toString();
+// Falls back to the site-wide banner when an episode has no share image yet.
+const share = shareImage && (await getImage({ src: shareImage, width: 1200, height: 630, fit: 'cover', format: 'jpg', quality: 85 }));
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'PodcastEpisode',
@@ -42,10 +45,11 @@ const jsonLd = {
   datePublished: date.toISOString().slice(0, 10),
   description: summary,
   partOfSeries: { '@type': 'PodcastSeries', name: SITE.name, url: SITE.url },
+  ...(share && { image: new URL(share.src, Astro.site).toString() }),
 };
 ---
 
-<Base title={`${title} — ${guest.name}`} description={summary}>
+<Base title={`${title} — ${guest.name}`} description={summary} image={share ? share.src : undefined}>
   <script slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
   <section class="ep-hero navy tex">

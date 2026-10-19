@@ -20,6 +20,8 @@ const episodes = defineCollection({
         photo: image().optional(),
         links: z.array(z.object({ label: z.string(), url: z.url() })).default([]),
       }),
+      // Social share image (Open Graph / X / LinkedIn), from the episode template. Resized to 1200×630 JPG.
+      shareImage: image().optional(),
       riversideEmbed: z.url().optional(),
       listen: z
         .object({ apple: z.url().optional(), spotify: z.url().optional(), youtube: z.url().optional() })
