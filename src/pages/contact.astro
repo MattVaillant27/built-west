@@ -60,6 +60,11 @@ const social = SITE.social.filter((s) => s.href);
         <div class="card">
           <p class="eyebrow eyebrow--muted">Press and general enquiries</p>
           <p class="direct"><a class="link" href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
+          <p class="eyebrow eyebrow--muted">More</p>
+          <ul class="more">
+            <li><a class="link" href="/guests/">Invited on the show? What to expect</a></li>
+            <li><a class="link" href="/sponsors/">Partner with Built West</a></li>
+          </ul>
           {social.length > 0 && (
             <>
               <p class="eyebrow eyebrow--muted">Follow</p>
@@ -107,6 +112,8 @@ const social = SITE.social.filter((s) => s.href);
   .seg button[aria-selected='true'] { background: var(--navy); color: var(--white); }
   .two { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
   .direct { margin: 12px 0 24px; }
+  .more { list-style: none; padding: 0; margin: 12px 0 24px; }
+  .more li { margin-bottom: 8px; }
   .card .pills { margin-top: 12px; }
   .card .micro { margin-top: 28px; }
 

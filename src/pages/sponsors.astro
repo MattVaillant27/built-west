@@ -1,0 +1,153 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE } from '../site';
+
+const audience = [
+  { title: 'Founders and executives', body: 'Seasoned operators who want the person behind the title, and how the work really gets done.' },
+  { title: 'Investors', body: 'People who back BC companies and want to hear from the operators building them.' },
+  { title: 'First-time founders', body: 'The next wave, who want to be in the room with both.' },
+];
+
+const formats = [
+  { title: 'Presenting partner', body: 'One partner for a full season. Named at the top of every episode, with a host-read message and a place on the site.' },
+  { title: 'Episode partner', body: 'A host-read message in a single episode or a short run, in audio and video, with a link in the show notes.' },
+  { title: 'Something else', body: 'Live recordings, events and other ideas. If it fits the show and the audience, we’re open to it.' },
+];
+
+const principles = [
+  'Partners are always disclosed, in the episode and in the show notes.',
+  'Partners don’t choose guests, topics or questions. The conversation stays ours.',
+  'We work with companies we’d be comfortable recommending to our own audience.',
+];
+---
+
+<Base title="Partner with us" description="Sponsor Built West, the long-form BC tech podcast. Reach the founders, executives and investors building technology in British Columbia.">
+  <section class="page-hero">
+    <div class="wrap">
+      <p class="eyebrow">Partner with us</p>
+      <h1 class="h1">Reach the people building BC tech.</h1>
+      <p class="lede">Built West is a long-form interview show with the founders, operators and investors behind BC’s technology companies. A small number of partners help make it possible.</p>
+    </div>
+  </section>
+
+  <section class="section section--flush-top">
+    <div class="wrap">
+      <h2 class="eyebrow divider-label block-title">Who listens</h2>
+      <div class="cols">
+        {audience.map((a) => (
+          <div>
+            <h3>{a.title}</h3>
+            <p>{a.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="navy tex section">
+    <div class="wrap">
+      <p class="eyebrow">Ways to partner</p>
+      <h2 class="statement formats-title">Fewer partners, more attention.</h2>
+      <div class="cols cols--dark">
+        {formats.map((f) => (
+          <div>
+            <h3>{f.title}</h3>
+            <p>{f.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap principles">
+      <div>
+        <p class="eyebrow eyebrow--muted">How we work</p>
+        <h2 class="h2">Editorial comes first.</h2>
+        <hr class="rule" />
+      </div>
+      <ul class="checklist">
+        {principles.map((p) => <li>{p}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section--flush-top" id="enquire">
+    <div class="wrap layout">
+      <div>
+        <p class="eyebrow eyebrow--muted">Start a conversation</p>
+        <h2 class="h2 form-title">Tell us about your company.</h2>
+        <form name="sponsor" method="POST" action="/thanks/" data-netlify="true" netlify-honeypot="bot-field" data-ajax data-success="<strong>Thanks.</strong> We’ll be in touch within a few business days.">
+          <input type="hidden" name="form-name" value="sponsor" />
+          <p class="hp" aria-hidden="true"><label>Leave this empty <input name="bot-field" tabindex="-1" autocomplete="off" /></label></p>
+          <div class="two">
+            <div class="field"><label for="s-name">Your name</label><input id="s-name" name="name" required autocomplete="name" /></div>
+            <div class="field"><label for="s-email">Work email</label><input id="s-email" name="email" type="email" required autocomplete="email" /></div>
+          </div>
+          <div class="two">
+            <div class="field"><label for="s-company">Company</label><input id="s-company" name="company" required autocomplete="organization" /></div>
+            <div class="field"><label for="s-role">Your role</label><input id="s-role" name="role" autocomplete="organization-title" /></div>
+          </div>
+          <div class="field">
+            <label for="s-interest">Interested in</label>
+            <select id="s-interest" name="interest">
+              <option>Presenting partner</option>
+              <option>Episode partner</option>
+              <option>Something else</option>
+              <option>Not sure yet</option>
+            </select>
+          </div>
+          <div class="field"><label for="s-message">What would you like to achieve?</label><textarea id="s-message" name="message" required></textarea></div>
+          <div class="field"><label for="s-website">Website (optional)</label><input id="s-website" name="website" type="url" placeholder="https://" autocomplete="url" /></div>
+          <button class="btn" type="submit">Send enquiry <span class="arrow" aria-hidden="true"></span></button>
+          <p class="form-error" role="alert" hidden>That didn’t go through. Please try again, or email {SITE.email}.</p>
+        </form>
+      </div>
+
+      <aside>
+        <div class="card">
+          <p class="eyebrow eyebrow--muted">Prefer email?</p>
+          <p class="direct"><a class="link" href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
+          <p class="meta">We’re in our first season. Partners who join early help shape what the show becomes.</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .page-hero { padding: clamp(64px, 9vw, 120px) 0 clamp(40px, 5vw, 72px); }
+  .page-hero h1 { max-width: 20ch; margin: 20px 0 24px; }
+  .page-hero .lede { max-width: 62ch; }
+
+  .block-title { margin-bottom: 28px; }
+  .cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+  .cols > div { border-top: 2px solid var(--navy); padding-top: 22px; }
+  .cols h3 { font-size: clamp(22px, 2vw, 28px); line-height: 1.15; margin-bottom: 12px; }
+  .cols--dark > div { border-top-color: var(--white-15); }
+  .cols--dark p { color: var(--white-90); }
+  .formats-title { margin: 18px 0 56px; max-width: 18ch; }
+
+  .principles { display: grid; grid-template-columns: 5fr 6fr; gap: 72px; align-items: start; }
+  .principles h2 { margin: 14px 0 20px; }
+  .checklist { list-style: none; padding: 0; border-bottom: 1px solid var(--navy-15); }
+  .checklist li { position: relative; padding: 18px 0 18px 32px; border-top: 1px solid var(--navy-15); font-size: 18px; }
+  .checklist li::before { content: ''; position: absolute; left: 2px; top: 30px; width: 12px; height: 2px; background: var(--orange); }
+
+  .layout { display: grid; grid-template-columns: 7fr 4fr; gap: 80px; padding-top: 48px; border-top: 1px solid var(--navy-15); }
+  .form-title { margin: 14px 0 36px; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  select {
+    width: 100%; height: 46px; background: transparent; border: 0; border-bottom: 1.5px solid currentColor; border-radius: 0;
+    font: inherit; font-size: 17px; color: inherit; padding: 0 2px; cursor: pointer;
+  }
+  select:focus { outline: 2px solid var(--orange); outline-offset: 3px; }
+  .direct { margin: 12px 0 20px; }
+
+  @media (max-width: 959px) {
+    .cols { grid-template-columns: 1fr; gap: 32px; }
+    .principles { grid-template-columns: 1fr; gap: 28px; }
+    .layout, .two { grid-template-columns: 1fr; gap: 0 28px; }
+    aside { margin-top: 48px; }
+  }
+</style>

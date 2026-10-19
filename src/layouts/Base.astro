@@ -134,6 +134,7 @@ const ogImage = new URL(image, Astro.site);
               notify: ['sign_up', { method: 'email' }],
               pitch: ['generate_lead', { lead_type: 'guest_pitch' }],
               contact: ['contact_submit', {}],
+              sponsor: ['generate_lead', { lead_type: 'sponsor_enquiry' }],
             };
             const ev = events[form.getAttribute('name') ?? ''];
             if (ev) (window as unknown as { bwTrack?: (e: string, p: object) => void }).bwTrack?.(ev[0], { ...ev[1], page: location.pathname });

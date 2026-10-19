@@ -1,0 +1,150 @@
+---
+import Base from '../layouts/Base.astro';
+import PitchBand from '../components/PitchBand.astro';
+import { SITE } from '../site';
+
+const facts = [
+  { label: 'Format', body: 'One guest, one conversation. No panel, no co-hosts.' },
+  { label: 'Length', body: 'About an hour on tape. Plan for 90 minutes with setup.' },
+  { label: 'Where', body: 'Remote on Riverside, from your own desk. In person when we can.' },
+  { label: 'Cost', body: 'None. Guests don’t pay to appear, and spots aren’t for sale.' },
+];
+
+const steps = [
+  { title: 'A short intro call', body: 'Fifteen or twenty minutes, a week or two before we record. We get to know each other and agree on the ground worth covering.' },
+  { title: 'Themes, not a script', body: 'We send the themes ahead of time so nothing comes out of nowhere. There are no gotcha questions and nothing to memorize.' },
+  { title: 'Recording day', body: 'You get a Riverside link that opens in your browser. Nothing to install. We do a quick sound check, then talk for about an hour.' },
+  { title: 'The edit', body: 'We cut for flow and clarity, not for drama. If something comes out wrong while we’re recording, say so and we’ll take another run at it.' },
+  { title: 'Release', body: 'We let you know the release date ahead of time. On the day, you get the links and short clips to share with your team and network.' },
+];
+
+const setup = [
+  'A quiet room with a door you can close',
+  'Headphones or earbuds, so your mic doesn’t pick up the conversation',
+  'A laptop or desktop with Chrome, plugged in',
+  'Camera at eye level, with light in front of you rather than behind',
+  'A wired connection if you have one; otherwise sit close to the router',
+  'Notifications off, phone on silent',
+];
+---
+
+<Base title="Be a guest" description="What to expect as a guest on Built West, the BC tech podcast: the format, how to prepare, recording on Riverside, and what happens after the episode goes live.">
+  <section class="page-hero">
+    <div class="wrap">
+      <p class="eyebrow">Be a guest</p>
+      <h1 class="h1">What to expect when you come on the show.</h1>
+      <p class="lede">Built West is a long-form conversation about your work and the person doing it. Here’s how it runs, from the first call to release day.</p>
+    </div>
+  </section>
+
+  <section class="section section--flush-top">
+    <div class="wrap">
+      <dl class="facts">
+        {facts.map((f) => (
+          <div>
+            <dt class="eyebrow">{f.label}</dt>
+            <dd>{f.body}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+
+  <section class="section section--flush-top">
+    <div class="wrap">
+      <h2 class="eyebrow steps-title">How it works</h2>
+      <ol class="steps">
+        {steps.map((s, i) => (
+          <li>
+            <span class="num">{String(i + 1).padStart(2, '0')}</span>
+            <h3>{s.title}</h3>
+            <p>{s.body}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="navy tex section">
+    <div class="wrap talk">
+      <div>
+        <p class="eyebrow">What we talk about</p>
+        <h2 class="statement">The work, and the life around it.</h2>
+      </div>
+      <div class="prose">
+        <p>How something got built, what it cost, and the decisions that only looked obvious afterwards. The early days, the misses, and what you’d tell someone starting out in BC today.</p>
+        <p>We also get into the person: where you came from, how you think, and how you handle the rest of life along the way. You don’t need a polished story. The honest version is the interesting one.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap setup">
+      <div>
+        <p class="eyebrow eyebrow--muted">Before you record</p>
+        <h2 class="h2">Your setup</h2>
+        <hr class="rule" />
+        <p class="meta">You don’t need a studio. These make the biggest difference.</p>
+      </div>
+      <ul class="checklist">
+        {setup.map((s) => <li>{s}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section--flush-top">
+    <div class="wrap">
+      <div class="card questions">
+        <div>
+          <p class="eyebrow eyebrow--muted">Invited and have questions?</p>
+          <p class="lede">Email us and we’ll get back to you directly.</p>
+        </div>
+        <a class="btn" href={`mailto:${SITE.email}`}>Email {SITE.email} <span class="arrow" aria-hidden="true"></span></a>
+      </div>
+    </div>
+  </section>
+
+  <PitchBand />
+</Base>
+
+<style>
+  .page-hero { padding: clamp(64px, 9vw, 120px) 0 clamp(40px, 5vw, 72px); }
+  .page-hero h1 { max-width: 20ch; margin: 20px 0 24px; }
+  .page-hero .lede { max-width: 60ch; }
+
+  .facts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; }
+  .facts > div { border-top: 2px solid var(--navy); padding-top: 20px; }
+  .facts dt { margin-bottom: 12px; }
+  .facts dd { margin: 0; }
+
+  .steps-title { margin-bottom: 24px; }
+  .steps { list-style: none; padding: 0; border-bottom: 1px solid var(--navy-15); }
+  .steps li { display: grid; grid-template-columns: 90px 1fr 1.4fr; gap: 32px; padding: 30px 0; border-top: 1px solid var(--navy-15); align-items: baseline; }
+  .num { font: 700 13px var(--font-sans); letter-spacing: 0.2em; color: var(--coastal); }
+  .steps h3 { font-size: clamp(22px, 2.2vw, 30px); line-height: 1.15; }
+
+  .talk { display: grid; grid-template-columns: 5fr 6fr; gap: 72px; align-items: end; }
+  .talk h2 { margin-top: 18px; }
+  .talk .prose p:last-child { margin-bottom: 0; }
+
+  .setup { display: grid; grid-template-columns: 5fr 6fr; gap: 72px; align-items: start; }
+  .setup h2 { margin: 14px 0 20px; }
+  .setup .rule { margin-bottom: 20px; }
+  .checklist { list-style: none; padding: 0; border-bottom: 1px solid var(--navy-15); }
+  .checklist li { position: relative; padding: 16px 0 16px 32px; border-top: 1px solid var(--navy-15); }
+  .checklist li::before { content: ''; position: absolute; left: 2px; top: 25px; width: 12px; height: 2px; background: var(--orange); }
+
+  .questions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 24px; padding: 36px 40px; }
+  .questions .lede { margin-top: 10px; }
+
+  @media (max-width: 959px) {
+    .facts { grid-template-columns: 1fr 1fr; gap: 28px; }
+    .steps li { grid-template-columns: 1fr; gap: 8px; }
+    .talk, .setup { grid-template-columns: 1fr; gap: 28px; }
+    .questions { padding: 28px 24px; }
+    .questions .btn { white-space: normal; height: auto; min-height: 48px; padding: 12px 18px; }
+  }
+  @media (max-width: 539px) {
+    .facts { grid-template-columns: 1fr; }
+  }
+</style>
