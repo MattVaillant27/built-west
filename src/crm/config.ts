@@ -20,7 +20,7 @@ export const GUEST_LANES = ['Founder', 'Operator', 'Investor', 'Ecosystem', 'Gov
 export const GUEST_PROFILES = ['Marquee', 'Established', 'Rising'];
 export const GUEST_WARMTH = ['1 - Close', '2 - Warm', '3 - Needs nudge', '4 - One degree out'];
 export const GUEST_TIMING = ['Launch (release)', 'Early (ep 3-8)', 'Mid', 'Marquee push', 'Hold (timing)', 'Park', 'Park / partner'];
-export const GUEST_REGIONS = ['Victoria', 'Vancouver', 'Okanagan', 'Kootenays', 'Northern BC', 'BC', 'BC-rooted', 'BC-rooted / US'];
+export const GUEST_REGIONS = ['Victoria', 'Vancouver', 'Okanagan', 'Kootenays', 'Up-Island', 'Northern BC', 'BC', 'BC-rooted', 'BC-rooted / US'];
 export const CONFIDENCE = ['Matt stated', 'Verified (web)', 'From memory, verify'];
 
 export type FieldType = 'text' | 'email' | 'tel' | 'url' | 'date' | 'number' | 'select' | 'textarea';
