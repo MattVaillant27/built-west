@@ -60,7 +60,7 @@ Layouts are mostly cream and navy, forest for depth, orange as a single highligh
 - `src/components/` — Header, Footer, SignupForm, PitchBand, Portrait, EpisodeRow, EpisodeCard.
 - `src/content/episodes/*.md` — one file per episode; schema in `src/content.config.ts`. Copy `_sample-episode.md` (files starting `_` are ignored). `draft: true` hides an episode. `shareImage` (Matt's templated episode share image, stored next to the episode) becomes that page's Open Graph/X image: `src/pages/episodes/[slug]/share.jpg.ts` fits it uncropped into 1200×630 (square art is padded with its own corner colour). Without it the page uses `og-default.jpg`.
 - Forms (Netlify): `notify` (email), `pitch`, `contact`, `sponsor` (on `/sponsors`). They only submit on Netlify; locally they show the error state.
-- Email list: **Kit** (form ID `10067197`, double opt-in). `netlify/functions/submission-created.mjs` passes verified `notify` submissions to Kit's public form endpoint (no API key; the browser never calls Kit). Netlify keeps a copy. The consent line under every sign-up box (CASL) lives in `SignupForm.astro`.
+- Email list: **Kit** (form ID `10067197`, double opt-in). `netlify/functions/submission-created.mjs` passes verified `notify` submissions to Kit through API v4 (create subscriber, then add to the form), using the `KIT_API_KEY` Netlify env var (secret, Production only; never commit it). The browser never calls Kit. Kit's public form endpoint silently dropped server-side sign-ups, so don't go back to it. Netlify keeps a copy. The consent line under every sign-up box (CASL) lives in `SignupForm.astro`.
 - `design/` — wireframes and source assets (not deployed). `public/` — favicons, OG image, `topo.svg` texture.
 
 ## Tracking & consent

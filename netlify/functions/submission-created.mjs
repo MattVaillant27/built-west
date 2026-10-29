@@ -8,23 +8,34 @@ import { connectLambda, getStore } from '@netlify/blobs';
 const clean = (v, max = 2000) => String(v ?? '').trim().slice(0, max);
 const KIT_FORM_ID = '10067197';
 
-async function subscribeToKit(email) {
-  const res = await fetch(`https://app.kit.com/forms/${KIT_FORM_ID}/subscriptions`, {
-    method: 'POST',
-    headers: { Accept: 'application/json', 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({ email_address: email }).toString(),
-  });
-  const json = await res.json().catch(() => ({}));
+// Kit API v4 (needs the KIT_API_KEY env var in Netlify). The subscriber must exist before it can be added to a form,
+// so create it first (Kit returns the existing one if the address is already on the list), then add it to the form.
+async function subscribeToKit(email, referrer) {
   const who = email.replace(/^(.{2}).*@/, '$1…@');
-  if (!res.ok || json.status !== 'success') console.error('Kit subscribe failed', who, res.status, JSON.stringify(json.errors ?? json));
-  else console.log('Kit subscribe ok', who);
+  const key = process.env.KIT_API_KEY;
+  if (!key) return console.error('Kit subscribe skipped: KIT_API_KEY is not set', who);
+  const kit = async (path, body) => {
+    const res = await fetch(`https://api.kit.com/v4${path}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-Kit-Api-Key': key },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) throw new Error(`${path} ${res.status} ${(await res.text()).slice(0, 300)}`);
+  };
+  try {
+    await kit('/subscribers', { email_address: email, state: 'active' });
+    await kit(`/forms/${KIT_FORM_ID}/subscribers`, { email_address: email, ...(referrer && { referrer }) });
+    console.log('Kit subscribe ok', who);
+  } catch (err) {
+    console.error('Kit subscribe failed', who, err.message);
+  }
 }
 
 export const handler = async (event) => {
   const { payload } = JSON.parse(event.body || '{}');
   if (payload?.form_name === 'notify') {
     const email = clean(payload.data?.email, 254);
-    if (email) await subscribeToKit(email);
+    if (email) await subscribeToKit(email, clean(payload.data?.referrer, 500));
     return { statusCode: 200, body: 'ok' };
   }
   if (payload?.form_name === 'sponsor') {
