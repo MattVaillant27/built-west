@@ -15,7 +15,9 @@ async function subscribeToKit(email) {
     body: new URLSearchParams({ email_address: email }).toString(),
   });
   const json = await res.json().catch(() => ({}));
-  if (!res.ok || json.status === 'failed') console.error('Kit subscribe failed', res.status, JSON.stringify(json.errors ?? json));
+  const who = email.replace(/^(.{2}).*@/, '$1…@');
+  if (!res.ok || json.status !== 'success') console.error('Kit subscribe failed', who, res.status, JSON.stringify(json.errors ?? json));
+  else console.log('Kit subscribe ok', who);
 }
 
 export const handler = async (event) => {
