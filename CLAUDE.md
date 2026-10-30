@@ -54,7 +54,7 @@ Layouts are mostly cream and navy, forest for depth, orange as a single highligh
 ## Project structure and commands
 
 - `npm run dev` (http://localhost:4321) · `npm run build` → `dist/` · `npx astro check` for types. Astro v7.
-- `src/site.ts` — site settings: email, host, nav, social and listen links (empty = hidden), and the `launched` flag (flip to `true` after episode one; the home hero and teaser switch to the latest episode).
+- `src/site.ts` — site settings: email, host, nav, social and listen links (empty = hidden), `rss` (Riverside hosting feed), `trailer` (data for `/trailer/`, cover art in `src/assets/cover.png`), and the `launched` flag (flip to `true` after episode one; the home hero and teaser switch to the latest episode).
 - `src/styles/global.css` — design tokens and shared classes (`.eyebrow`, `.statement`, `.btn`, `.tex`, `.card`, `.field`…). Page-specific styles live in each `.astro` file.
 - `src/layouts/Base.astro` — head/SEO, header, footer, and the Netlify Forms AJAX handler for any `form[data-ajax]`.
 - `src/components/` — Header, Footer, SignupForm, PitchBand, Portrait, EpisodeRow, EpisodeCard.
@@ -69,7 +69,7 @@ Layouts are mostly cream and navy, forest for depth, orange as a single highligh
 - `src/components/Tracking.astro` (in `Base.astro` head): Google Consent Mode v2, everything **denied** until the visitor accepts; GA4 loads with the ID; **Meta Pixel script loads only after Accept**. `window.bwTrack(event, params)` sends to GA4 and maps to Meta (`sign_up`/`generate_lead` → Lead, `contact_submit` → Contact).
 - `src/components/ConsentBanner.astro`: Accept/Decline, stored in `localStorage` key `bw-consent`; any `[data-open-consent]` element reopens it (footer "Cookie settings", Privacy page).
 - Events: form successes (`sign_up`, `generate_lead`, `contact_submit`) fire from the form handler in `Base.astro`; links with `data-track="listen|social"` + `data-platform` fire `listen_click` / `social_click`.
-- Social bio short links (302 redirects in `netlify.toml`): `/x`, `/ig`, `/yt`, `/in` → home page with UTM tags. Use these in bios instead of raw UTM URLs.
+- Social bio short links (302 redirects in `netlify.toml`): `/x`, `/ig`, `/yt`, `/in` → home page with UTM tags. `/apple` and `/spotify` → the show pages. Use these in bios instead of raw UTM URLs.
 - Rules: nothing that sets cookies loads before consent; never add tracking to `src/layouts/Crm.astro` (`/crm`). Update `src/pages/privacy.astro` when adding any new tag or service.
 
 ## CRM (`/crm`, private, single user)
