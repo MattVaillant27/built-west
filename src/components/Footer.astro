@@ -4,6 +4,7 @@ import SignupForm from './SignupForm.astro';
 import { SITE } from '../site';
 
 const social = SITE.social.filter((s) => s.href);
+const listen = SITE.listen.filter((l) => l.href);
 const year = new Date().getFullYear();
 ---
 
@@ -18,6 +19,7 @@ const year = new Date().getFullYear();
         <p class="eyebrow">Explore</p>
         <ul>
           <li><a href="/episodes/">Episodes</a></li>
+          <li><a href="/trailer/">Trailer</a></li>
           <li><a href="/about/">About</a></li>
           <li><a href="/guests/">Be a guest</a></li>
           <li><a href="/contact/">Pitch a guest</a></li>
@@ -25,12 +27,20 @@ const year = new Date().getFullYear();
           <li><a href="/contact/">Contact</a></li>
         </ul>
       </nav>
-      {social.length > 0 && (
-        <nav aria-label="Follow Built West">
-          <p class="eyebrow">Follow</p>
-          <ul>{social.map((s) => <li><a href={s.href} rel="me noopener" data-track="social" data-platform={s.label}>{s.label}</a></li>)}</ul>
-        </nav>
-      )}
+      <nav aria-label="Listen and follow">
+        {listen.length > 0 && (
+          <>
+            <p class="eyebrow">Listen</p>
+            <ul class="group">{listen.map((l) => <li><a href={l.href} data-track="listen" data-platform={l.label}>{l.label}</a></li>)}</ul>
+          </>
+        )}
+        {social.length > 0 && (
+          <>
+            <p class="eyebrow">Follow</p>
+            <ul>{social.map((s) => <li><a href={s.href} rel="me noopener" data-track="social" data-platform={s.label}>{s.label}</a></li>)}</ul>
+          </>
+        )}
+      </nav>
       <div>
         <p class="eyebrow">Get notified</p>
         <SignupForm id="signup-footer" button="Join" dark />
@@ -56,6 +66,7 @@ const year = new Date().getFullYear();
   .eyebrow { margin-bottom: 18px; }
   ul { list-style: none; padding: 0; }
   nav li { margin-bottom: 10px; }
+  .group { margin-bottom: 28px; }
   a { text-decoration: none; }
   a:hover { text-decoration: underline; text-decoration-color: var(--orange); text-underline-offset: 4px; }
   .legal { display: flex; flex-wrap: wrap; gap: 8px 20px; }

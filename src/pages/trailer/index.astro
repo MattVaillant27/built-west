@@ -1,0 +1,147 @@
+---
+// The show trailer. Details live in SITE.trailer (src/site.ts).
+import { Picture } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import SignupForm from '../../components/SignupForm.astro';
+import cover from '../../assets/cover.png';
+import { formatDate } from '../../lib/episodes';
+import { SITE } from '../../site';
+
+const t = SITE.trailer;
+const date = new Date(t.date);
+const pageUrl = new URL(Astro.url.pathname, Astro.site).toString();
+const trailerLinks = [
+  { label: 'Apple Podcasts', href: t.apple },
+  { label: 'Spotify', href: t.spotify },
+].filter((l) => l.href);
+const showLinks = SITE.listen.filter((l) => l.href);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'PodcastEpisode',
+  url: pageUrl,
+  name: t.title,
+  datePublished: t.date,
+  description: t.description.join(' '),
+  image: new URL('/trailer/share.jpg', Astro.site).toString(),
+  associatedMedia: { '@type': 'MediaObject', contentUrl: t.audio },
+  partOfSeries: { '@type': 'PodcastSeries', name: SITE.name, url: SITE.url },
+};
+---
+
+<Base title="Trailer" description="The Built West trailer: what the show is, who it’s for, and where to listen. Long-form conversations with the people building BC tech." image="/trailer/share.jpg">
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+  <section class="ep-hero navy tex">
+    <div class="wrap grid">
+      <div>
+        <p class="eyebrow">Trailer · {formatDate(date)} · {t.duration}</p>
+        <h1>Long-form conversations with the people building BC tech.</h1>
+        <hr class="rule" />
+        <p class="guest">Hosted by {SITE.host.name}</p>
+        <p class="role">New episodes every two weeks</p>
+        <a class="btn btn--inv play-now" href="#listen">Play trailer <span class="arrow" aria-hidden="true"></span></a>
+      </div>
+      <Picture class="cover" src={cover} alt="Built West, a BC tech podcast, hosted by Matt Vaillant" formats={['avif', 'webp']} widths={[360, 720]} sizes="(min-width: 960px) 360px, 80vw" loading="eager" />
+    </div>
+  </section>
+
+  <section id="listen" class="listen">
+    <div class="wrap">
+      <div class="player navy">
+        <audio controls preload="none" src={t.audio}>
+          <a href={t.audio}>Download the trailer (MP3)</a>
+        </audio>
+      </div>
+      {trailerLinks.length > 0 && (
+        <div class="listen-on">
+          <span class="eyebrow eyebrow--muted">Listen on</span>
+          <div class="pills">{trailerLinks.map((l) => <a class="pill" href={l.href} data-track="listen" data-platform={l.label}>{l.label}</a>)}</div>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <section class="section body">
+    <div class="wrap grid">
+      <article class="prose">
+        {t.description.map((p, i) => <p class:list={{ lede: i === 0 }}>{p}</p>)}
+        <p><a href="/about/">More about the show</a></p>
+      </article>
+
+      <aside>
+        {showLinks.length > 0 && (
+          <div class="card">
+            <p class="eyebrow eyebrow--muted">Follow the show</p>
+            <p class="small">Follow on your podcast app so new episodes arrive on their own.</p>
+            <div class="pills">{showLinks.map((l) => <a class="pill" href={l.href} data-track="listen" data-platform={l.label}>{l.label}</a>)}</div>
+          </div>
+        )}
+        <div class="card">
+          <p class="eyebrow eyebrow--muted">Share</p>
+          <div class="pills">
+            <button class="pill copy" type="button" data-url={pageUrl}>Copy link</button>
+            <a class="pill" href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(pageUrl)}`}>LinkedIn</a>
+            <a class="pill" href={`https://x.com/intent/post?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent('Built West, a new BC tech podcast')}`}>X</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="navy tex section">
+    <div class="wrap">
+      <p class="eyebrow">Never miss one</p>
+      <p class="serif statement signup-title">New conversations, straight to your inbox.</p>
+      <SignupForm id="signup-trailer" dark />
+    </div>
+  </section>
+</Base>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('.copy').forEach((b) =>
+    b.addEventListener('click', async () => {
+      await navigator.clipboard.writeText(b.dataset.url ?? location.href);
+      b.textContent = 'Copied';
+      setTimeout(() => (b.textContent = 'Copy link'), 2000);
+    }),
+  );
+  // "Play trailer" scrolls to the player and starts it.
+  document.querySelector('.play-now')?.addEventListener('click', () => document.querySelector('audio')?.play().catch(() => {}));
+  // Count trailer plays in GA4 (after consent; bwTrack is a no-op otherwise).
+  document.querySelector('audio')?.addEventListener('play', () =>
+    (window as unknown as { bwTrack?: (e: string, p: object) => void }).bwTrack?.('listen_click', { platform: 'Website player', page: location.pathname }),
+  { once: true });
+</script>
+
+<style>
+  .ep-hero { padding: clamp(56px, 8vw, 112px) 0; }
+  .ep-hero .grid { display: grid; grid-template-columns: 7fr 4fr; gap: 72px; align-items: center; }
+  .ep-hero h1 { font-size: clamp(38px, 5vw, 68px); line-height: 1.04; letter-spacing: -0.015em; margin: 20px 0 24px; max-width: 18ch; }
+  .ep-hero .rule { margin-bottom: 20px; }
+  .ep-hero :global(.cover), .ep-hero :global(.cover img) { width: 100%; height: auto; border-radius: 2px; }
+  .guest { font: 600 18px var(--font-sans); }
+  .role { color: var(--white-70); margin-bottom: 28px; }
+
+  .listen { padding-top: 48px; }
+  .player { border-radius: 4px; padding: 20px; display: flex; align-items: center; }
+  .player audio { width: 100%; }
+  .listen-on { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-top: 20px; }
+
+  .body { padding-top: 64px; }
+  .body .grid { display: grid; grid-template-columns: 8fr 4fr; gap: 72px; }
+  .body .lede { max-width: none; }
+  .prose a { font-weight: 600; }
+  aside { position: sticky; top: 96px; align-self: start; }
+  .card + .card { margin-top: 20px; }
+  .card .pills { margin-top: 16px; }
+  .small { font-size: 15px; margin-top: 10px; }
+  button.pill { background: none; cursor: pointer; }
+  .signup-title { font-size: clamp(30px, 4vw, 56px); margin: 24px 0 32px; }
+
+  @media (max-width: 959px) {
+    .ep-hero .grid, .body .grid { grid-template-columns: 1fr; gap: 40px; }
+    .ep-hero :global(.cover) { max-width: 320px; }
+    aside { position: static; }
+  }
+</style>

@@ -48,6 +48,19 @@
   status = 302
   force = true
 
+# Listen short links for posts and bios.
+[[redirects]]
+  from = "/apple"
+  to = "https://podcasts.apple.com/ca/podcast/built-west/id6828986217"
+  status = 302
+  force = true
+
+[[redirects]]
+  from = "/spotify"
+  to = "https://open.spotify.com/show/7CQdrTef34eOpHZgRaHD1U"
+  status = 302
+  force = true
+
 # One public address: send the Netlify subdomain to builtwest.ca (deploy previews use other hosts and are unaffected).
 [[redirects]]
   from = "https://builtwest.netlify.app/*"
