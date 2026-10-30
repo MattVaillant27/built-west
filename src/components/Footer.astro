@@ -1,6 +1,7 @@
 ---
 import logoStacked from '../assets/brand/logo-stacked-navy.svg';
 import SignupForm from './SignupForm.astro';
+import BrandIcon from './BrandIcon.astro';
 import { SITE } from '../site';
 
 const social = SITE.social.filter((s) => s.href);
@@ -31,13 +32,13 @@ const year = new Date().getFullYear();
         {listen.length > 0 && (
           <>
             <p class="eyebrow">Listen</p>
-            <ul class="group">{listen.map((l) => <li><a href={l.href} data-track="listen" data-platform={l.label}>{l.label}</a></li>)}</ul>
+            <ul class="group">{listen.map((l) => <li><a class="icon-link" href={l.href} data-track="listen" data-platform={l.label}><BrandIcon name={l.label} />{l.label}</a></li>)}</ul>
           </>
         )}
         {social.length > 0 && (
           <>
             <p class="eyebrow">Follow</p>
-            <ul>{social.map((s) => <li><a href={s.href} rel="me noopener" data-track="social" data-platform={s.label}>{s.label}</a></li>)}</ul>
+            <ul>{social.map((s) => <li><a class="icon-link" href={s.href} rel="me noopener" data-track="social" data-platform={s.label}><BrandIcon name={s.label} />{s.label}</a></li>)}</ul>
           </>
         )}
       </nav>
@@ -67,6 +68,9 @@ const year = new Date().getFullYear();
   ul { list-style: none; padding: 0; }
   nav li { margin-bottom: 10px; }
   .group { margin-bottom: 28px; }
+  .icon-link { display: inline-flex; align-items: center; gap: 10px; }
+  .icon-link :global(.brand-icon) { flex: none; opacity: 0.85; }
+  .icon-link:hover :global(.brand-icon) { opacity: 1; }
   a { text-decoration: none; }
   a:hover { text-decoration: underline; text-decoration-color: var(--orange); text-underline-offset: 4px; }
   .legal { display: flex; flex-wrap: wrap; gap: 8px 20px; }
