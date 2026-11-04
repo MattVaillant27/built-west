@@ -38,6 +38,7 @@ Layouts are mostly cream and navy, forest for depth, orange as a single highligh
 
 - Header: `built-west-horizontal.svg` (wordmark + descriptor) or `built-west-wordmark.svg` on small screens. The site copy `src/assets/brand/logo-horizontal.svg` has its viewBox trimmed to the artwork (`26 24 691 170`) so it fills the 80px header logo height; the artwork itself is unchanged.
 - Hero / coming-soon: `built-west-stacked.svg`.
+- Stacked logo, corrected "West" spacing (Nov 2026): `logos/Logos and Icons/New logos/built-west-stacked-primary{,-white}.svg` (transparent). These supersede the older stacked files. The footer uses the white one (`src/assets/brand/logo-stacked-white.svg`).
 - Favicon / touch icons / social avatars: monogram and app icons (`svgs/built-west-app-*.svg`, PNGs at 2048px).
 - Open Graph / social share: `social banner image.png` (2055×765) — crop/export a 1200×630 version.
 - Colour variants live in `logos/Logos and Icons/built-west-all-colour-logos/` — `{stacked,horizontal,wordmark}-{cream,navy,green,landscape}` in SVG + PNG. Each includes a **full-bleed background rectangle** in its colour, so use the variant that matches the section it sits on: `-cream` on cream, `-navy` on navy, `-green` on forest. `-landscape` (photo background) is for social/OG use only. Dark variants use white `#FFFFFF` lettering (as supplied).
