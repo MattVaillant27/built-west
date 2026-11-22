@@ -4,10 +4,12 @@ interface Props {
   id: string;
   button?: string;
   dark?: boolean;
+  /** Optional sentence shown before the consent line. */
+  lead?: string;
 }
 import { SITE } from '../site';
 
-const { id, button = 'Get notified', dark = false } = Astro.props;
+const { id, button = 'Get notified', dark = false, lead } = Astro.props;
 ---
 
 <div class:list={['signup', { dark }]}>
@@ -30,7 +32,7 @@ const { id, button = 'Get notified', dark = false } = Astro.props;
         {button} <span class="arrow" aria-hidden="true"></span>
       </button>
     </div>
-    <p class="consent">Occasional emails from {SITE.legalName} Unsubscribe anytime. <a href="/privacy/">Privacy</a></p>
+    <p class="consent">{lead && <>{lead} </>}Occasional emails from {SITE.legalName} Unsubscribe anytime. <a href="/privacy/">Privacy</a></p>
     <p class="form-error" role="alert" hidden>That didn’t go through. Check your email address and try again.</p>
   </form>
 </div>

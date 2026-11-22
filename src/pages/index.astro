@@ -2,18 +2,32 @@
 import { Picture, getImage } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import SignupForm from '../components/SignupForm.astro';
-import PitchBand from '../components/PitchBand.astro';
+import BrandIcon from '../components/BrandIcon.astro';
 import Portrait from '../components/Portrait.astro';
 import EpisodeCard from '../components/EpisodeCard.astro';
 import hero from '../assets/hero-coast.jpg';
 import hostPhoto from '../assets/host.webp';
 import { SITE } from '../site';
 import { getEpisodes, pad } from '../lib/episodes';
+import { upcomingGuests } from '../data/upcoming-guests';
 
 const [latest, ...older] = await getEpisodes();
 // Preload the hero (the page's largest element) so phones paint it sooner.
 const heroPreload = await getImage({ src: hero, format: 'avif', widths: [640, 960, 1235], quality: 82 });
 const live = SITE.launched && latest;
+
+// Pre-launch waitlist SEO; after launch the site defaults apply.
+const seo = live
+  ? {}
+  : {
+      pageTitle: 'Built West — A BC Tech Podcast, launching January 2027',
+      description: 'Built West is a biweekly, long-form interview podcast with the founders, operators and investors building tech in British Columbia. Launching January 2027.',
+    };
+
+const listenOn = [
+  ...SITE.listen.filter((l) => l.href && l.label !== 'YouTube'),
+  { label: 'YouTube', href: SITE.social.find((s) => s.label === 'YouTube')?.href ?? '' },
+].filter((l) => l.href);
 
 const intro = [
   { title: 'What it is', body: 'Built West is the long-form exploration of the people building the tech ecosystem in BC. Every two weeks we sit down with the founders, operators and investors building across this province to talk about what it takes: the early days, the whiffs, and the decisions that only looked obvious afterwards.' },
@@ -22,7 +36,7 @@ const intro = [
 ];
 ---
 
-<Base>
+<Base {...seo}>
   <link slot="head" rel="preload" as="image" type="image/avif" imagesrcset={heroPreload.srcSet.attribute} imagesizes="100vw" fetchpriority="high" />
   <section class="hero navy">
     <Picture
@@ -37,14 +51,14 @@ const intro = [
       fetchpriority="high"
     />
     <div class="wrap hero-copy">
-      <p class="eyebrow">{live ? 'New episode out now' : 'Coming soon'} · A BC tech podcast</p>
+      <p class="eyebrow">{live ? 'New episode out now' : 'Launching January 2027'} · A BC Tech Podcast</p>
       <h1 class="display">Conversations with the people building BC tech about work, life, and the trade-offs nobody puts in the pitch deck.</h1>
-      <p class="lede">We sit down with BC’s founders, operators and investors for unfiltered talks about the calls that failed, how they quiet the imposter syndrome, and the balance they’re still figuring out.</p>
+      <p class="lede">Every two weeks, host {SITE.host.name} sits down with BC’s founders, operators and investors for unhurried interviews about how things actually got built, and what it costs to build them.{!live && ' Episode one lands in January 2027.'}</p>
       {live ? (
         <a class="btn btn--inv" href={`/episodes/${latest.id}/`}>Listen to episode {pad(latest.data.number)} <span class="arrow" aria-hidden="true"></span></a>
       ) : (
         <div id="signup"><SignupForm id="signup-hero" dark /></div>
-        <a class="trailer-link" href="/trailer/"><span class="play" aria-hidden="true"></span>Listen to the trailer <span class="dur">{SITE.trailer.duration}</span></a>
+        <a class="trailer-link" href="/trailer/"><span class="play" aria-hidden="true"></span>Listen to the trailer <span class="dur">· {SITE.trailer.duration}</span></a>
       )}
     </div>
   </section>
@@ -98,31 +112,115 @@ const intro = [
         <div>
           <p class="eyebrow eyebrow--muted">Your host</p>
           <h2 class="h2">{SITE.host.name}</h2>
-          <p class="host-bio">Operator, dad, Victoria local. Fifteen years building companies across sales, marketing and operations. Built West is the show he kept wishing existed.</p>
+          <p class="host-bio">Operator, dad, Victoria local. Fifteen years building companies across sales, marketing and operations. He hosts Built West from Victoria.</p>
           <a class="link" href="/about/">More about the show →</a>
         </div>
       </div>
     </div>
   </section>
 
+  <!-- Trailer -->
+  <section class="section section--flush-top">
+    <div class="wrap">
+      <a class="trailer card" href="/trailer/">
+        <span class="play play--lg" aria-hidden="true"></span>
+        <div>
+          <p class="eyebrow eyebrow--muted">Trailer · {SITE.trailer.duration}</p>
+          <h2 class="trailer-title">Start here: the Built West trailer.</h2>
+          <p class="trailer-body">A short look at the show: long-form conversations with the people building BC tech, about the work and the life around it.</p>
+          <span class="link">Listen to the trailer</span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- Who's coming: placeholders until Matt confirms a guest has approved the announcement (src/data/upcoming-guests.ts). -->
   {!live && (
     <section class="section section--flush-top">
       <div class="wrap">
-        <div class="teaser card">
-          <Portrait alt="Guest to be announced" label="Guest to be announced" />
-          <div>
-            <p class="eyebrow eyebrow--muted">Episode 01 · Recording now</p>
-            <h2 class="h2">The first guest is announced soon.</h2>
-            <hr class="rule" />
-            <p class="meta">Guest name · Role, Company</p>
-            <a class="btn" href="#signup">Get notified <span class="arrow" aria-hidden="true"></span></a>
-          </div>
+        <div class="coming-head">
+          <p class="eyebrow eyebrow--muted">Who’s coming · Season 01</p>
+          <h2 class="h2">First guests, announced soon.</h2>
+          <p class="coming-body">We’re recording now with founders, operators and investors from across BC. As each conversation is confirmed, the name will land here — and in your inbox — ahead of January.</p>
         </div>
+        <ul class="coming">
+          {upcomingGuests.map((g) => (
+            <li class="card guest-card">
+              {g.announced && g.name ? (
+                <>
+                  <Portrait src={g.photo} alt={`${g.name}, ${g.role} at ${g.company}`} label="Photo coming" />
+                  <p class="guest-name">{g.name}</p>
+                  <p class="meta">{g.role}, {g.company}</p>
+                  <p class="eyebrow eyebrow--muted status">Episode {g.episode} · {g.dateLine}</p>
+                </>
+              ) : (
+                <>
+                  <Portrait alt="Guest to be announced" label="Guest to be announced" />
+                  <p class="guest-name">Guest name</p>
+                  <p class="meta">Role, Company</p>
+                  <p class="eyebrow eyebrow--muted status">Announced soon</p>
+                </>
+              )}
+            </li>
+          ))}
+        </ul>
+        <a class="btn" href="#signup">Get notified <span class="arrow" aria-hidden="true"></span></a>
       </div>
     </section>
   )}
 
-  <PitchBand />
+  <!-- Listen on -->
+  <section class:list={['section', { 'section--flush-top': !live }]}>
+    <div class="wrap listen-block">
+      <div>
+        <p class="eyebrow eyebrow--muted">Listen</p>
+        <h2 class="h2">Follow now, so episode one shows up automatically.</h2>
+      </div>
+      <div>
+        <p class="listen-body">The show is already on Apple Podcasts, Spotify, and YouTube. Follow today and you won’t have to go looking in January.</p>
+        <div class="pills">
+          {listenOn.map((l) => <a class="pill icon-pill" href={l.href} data-track="listen" data-platform={l.label}><BrandIcon name={l.label} />{l.label}</a>)}
+          <a class="pill" href="/trailer/">Trailer</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mid-page signup (same notify form; the hero keeps id="signup") -->
+  <section class="navy tex section">
+    <div class="wrap">
+      <p class="eyebrow">Get notified</p>
+      <h2 class="statement mid-title">Be first in line for episode one.</h2>
+      <SignupForm id="signup-mid" dark lead="Join the list for the January 2027 launch, guest announcements, and new episodes every two weeks." />
+    </div>
+  </section>
+
+  <!-- Be a guest (replaces the pitch band on this page only) -->
+  <section class="forest section">
+    <div class="wrap">
+      <p class="eyebrow">Be a guest</p>
+      <h2 class="statement guest-title">Who in BC tech is worth an hour?</h2>
+      <p class="lede guest-body">Built West is one guest, one conversation, about an hour. No ambushes, no gotchas. We talk about the work, and the life around it. If that’s you — or someone you know — we’d like to hear from you.</p>
+      <div class="ctas">
+        <a class="btn btn--inv" href="/guests/">Be a guest <span class="arrow" aria-hidden="true"></span></a>
+        <a class="btn btn--ghost" href="/contact/">Pitch a guest</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sponsor -->
+  <section class="section">
+    <div class="wrap partner">
+      <div>
+        <p class="eyebrow eyebrow--muted">Partner with us</p>
+        <h2 class="h2">A small number of partners help make the show possible.</h2>
+      </div>
+      <div>
+        <p class="partner-body">Reach the founders, operators and investors building technology in British Columbia. Editorial comes first: partners are always disclosed, and they don’t choose the guests or the questions.</p>
+        <a class="btn" href="/sponsors/">Partner with us <span class="arrow" aria-hidden="true"></span></a>
+      </div>
+    </div>
+  </section>
 </Base>
 
 <style>
@@ -153,6 +251,31 @@ const intro = [
   .teaser .rule { margin-bottom: 18px; }
   .teaser .meta { margin-bottom: 28px; }
 
+  .trailer { display: grid; grid-template-columns: auto 1fr; gap: 28px; align-items: start; padding: 36px 40px; text-decoration: none; }
+  .play--lg { width: 56px; height: 56px; }
+  .play--lg::after { left: 22px; top: 18px; border-left-width: 16px; border-top-width: 10px; border-bottom-width: 10px; }
+  .trailer-title { font-size: clamp(24px, 2.4vw, 34px); line-height: 1.15; margin: 10px 0 12px; }
+  .trailer-body { max-width: 62ch; margin-bottom: 16px; }
+  .trailer:hover .link { text-decoration-color: var(--orange); }
+
+  .coming-head { max-width: 760px; margin-bottom: 36px; }
+  .coming-head h2 { margin: 14px 0 16px; }
+  .coming { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 36px; }
+  .guest-card { padding: 20px; }
+  .guest-card :global(.portrait) { aspect-ratio: 1; margin-bottom: 18px; }
+  .guest-name { font: 700 22px/1.2 var(--font-display); }
+  .guest-card .meta { margin: 4px 0 14px; }
+
+  .listen-block, .partner { display: grid; grid-template-columns: 5fr 6fr; gap: 72px; align-items: start; }
+  .listen-block h2, .partner h2 { margin-top: 14px; }
+  .listen-body, .partner-body { font-size: clamp(17px, 1.4vw, 19px); margin-bottom: 24px; max-width: 56ch; }
+  .icon-pill { gap: 10px; }
+
+  .mid-title { margin: 18px 0 36px; max-width: 18ch; }
+  .guest-title { margin: 18px 0 24px; }
+  .guest-body { max-width: 60ch; color: var(--white-90); margin-bottom: 36px; }
+  .ctas { display: flex; flex-wrap: wrap; gap: 12px; }
+
   .recent-head { display: flex; align-items: center; gap: 24px; margin-bottom: 28px; }
   .recent-head h2 { flex: 1; }
   .recent { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
@@ -169,5 +292,13 @@ const intro = [
     .recent { grid-template-columns: 1fr 1fr; gap: 24px; }
     .host { grid-template-columns: 1fr; gap: 24px; }
     .host :global(.portrait) { max-width: 160px; }
+    .trailer { padding: 24px; gap: 20px; }
+    .coming { grid-template-columns: 1fr 1fr; }
+    .listen-block, .partner { grid-template-columns: 1fr; gap: 20px; }
+  }
+  @media (max-width: 599px) {
+    .coming { grid-template-columns: 1fr; }
+    .guest-card :global(.portrait) { max-width: 240px; }
+    .trailer { grid-template-columns: 1fr; }
   }
 </style>
