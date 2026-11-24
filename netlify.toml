@@ -61,6 +61,13 @@
   status = 302
   force = true
 
+# Old share-banner name (renamed Nov 2026 after the logo fix); keeps previews of earlier shares working.
+[[redirects]]
+  from = "/og-default.jpg"
+  to = "/og-share.jpg"
+  status = 301
+  force = true
+
 # One public address: send the Netlify subdomain to builtwest.ca (deploy previews use other hosts and are unaffected).
 [[redirects]]
   from = "https://builtwest.netlify.app/*"
