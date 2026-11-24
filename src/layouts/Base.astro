@@ -16,7 +16,7 @@ interface Props {
   noindex?: boolean;
 }
 
-const { title, pageTitle, description = SITE.seoDescription, image = '/og-default.jpg', noindex = false } = Astro.props;
+const { title, pageTitle, description = SITE.seoDescription, image = '/og-share.jpg', noindex = false } = Astro.props;
 const fullTitle = pageTitle ?? (title ? `${title} · ${SITE.name}` : `${SITE.name} — ${SITE.tagline}`);
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const ogImage = new URL(image, Astro.site);
@@ -82,7 +82,7 @@ const ogImage = new URL(image, Astro.site);
             url: SITE.url,
             description: SITE.seoDescription,
             inLanguage: 'en-CA',
-            image: new URL('/og-default.jpg', Astro.site).toString(),
+            image: new URL('/og-share.jpg', Astro.site).toString(),
             author: { '@id': `${SITE.url}/#host` },
             publisher: { '@id': `${SITE.url}/#organization` },
           },

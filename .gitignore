@@ -6,3 +6,4 @@ dist/
 .env
 .claude/
 kit-import*.csv
+crm-export/
