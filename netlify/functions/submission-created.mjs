@@ -12,7 +12,8 @@ const KIT_FORM_ID = '10067197';
 // so create it first (Kit returns the existing one if the address is already on the list), then add it to the form.
 async function subscribeToKit(email, referrer) {
   const who = email.replace(/^(.{2}).*@/, '$1…@');
-  const key = process.env.KIT_API_KEY;
+  // KITE_API_KEY: the variable was first saved in Netlify under that misspelt name; accept both.
+  const key = process.env.KIT_API_KEY || process.env.KITE_API_KEY;
   if (!key) return console.error('Kit subscribe skipped: KIT_API_KEY is not set', who);
   const kit = async (path, body) => {
     const res = await fetch(`https://api.kit.com/v4${path}`, {
